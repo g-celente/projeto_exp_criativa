@@ -1,7 +1,5 @@
 <?php 
 
-    ob_start(); // Inicia o buffer de saída
-
     //SERVICES
     include 'app/service/UserService.php';
 
@@ -11,7 +9,7 @@
     if (isset($_GET['page'])) {
 
         //PÁGINAS DE LOGIN E REGISTRO
-        if ($_GET['page'] == 1) {
+        if ($_GET['page'] == 1 && $_GET['method']) {
 
             if ($_GET['method'] == 'login') {
                 //
@@ -25,7 +23,7 @@
     }
      
     else {
-        include 'app/view/auth/CadastroView.php';
+        include 'app/view/Home.php';
     }
 
 ?>
