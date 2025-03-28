@@ -1,29 +1,32 @@
 <?php 
 
-    //SERVICES
-    include 'app/service/UserService.php';
+include 'app/service/UserService.php';
 
-    //MODELS
-    include 'app/model/User.php';
+include 'app/model/User.php';
 
-    if (isset($_GET['page'])) {
+function renderPage($page, $withSidebar = true) {
+    if ($withSidebar) {
+        include 'assets/templates/sideBar/sideBar.html';
+    }
+    include $page;
+}
 
-        //PÁGINAS DE LOGIN E REGISTRO
-        if ($_GET['page'] == 1 && $_GET['method']) {
+if (isset($_GET['page'])) {
 
-            if ($_GET['method'] == 'login') {
-                //
-            }
+    if ($_GET['page'] == 1 && $_GET['method']) {
 
-            if($_GET['method'] == "register"){
-                register();
-            }
-            
+        if ($_GET['method'] == 'login') {
+            //
+        }
+
+        if ($_GET['method'] == "register") {
+            renderPage('app/view/auth/CadastroView.php', false);
+            register();
         }
     }
-     
-    else {
-        include 'app/view/Home.php';
-    }
+
+} else {
+    renderPage('app/view/Home.php', true);
+}
 
 ?>
