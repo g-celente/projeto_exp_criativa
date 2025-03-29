@@ -16,4 +16,19 @@ function register () {
     }
 }
 
+function deleteUserById () {
+    if (isset($_GET['id'])) {
+        $userId = intval($_GET['id']); 
+    
+        if (deleteUser($userId)) {
+            header("Location: index.php"); 
+            exit();
+        } else {
+            echo "Erro ao deletar o usuário.";
+        }
+    } else {
+        echo "ID de usuário inválido.";
+    }
+}
+
 ?>

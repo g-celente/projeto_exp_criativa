@@ -25,6 +25,11 @@ if (isset($_GET['page'])) {
         }
     }
 
+    if ($_GET['page'] == 2 && $_GET['id']) {
+        deleteUserById();
+        renderPage('app/view/Home.php');
+    }
+
 } else {
     renderPage('app/view/Home.php', true);
 }

@@ -35,12 +35,14 @@
                         } else {
                             // Percorre o array associativo
                             foreach ($resultados as $resultado) {
+                                //BOTOES ADD-DELETE
                                 echo "<tr>
                                         <td>{$resultado['name']}</td>
                                         <td>{$resultado['email']}</td>
                                         <td>
                                             <a href='editar.php?id={$resultado['id']}' class='btn btn-warning btn-sm'>Alterar</a>
-                                            <a href='excluir.php?id={$resultado['id']}' class='btn btn-danger btn-sm' onclick='return confirm(\"Tem certeza que deseja excluir?\")'>Excluir</a>
+                                            <a href='index.php?page=2&id={$resultado['id']}' class='btn btn-danger btn-sm' onclick=>Excluir</a>
+
                                         </td>
                                       </tr>";
                             }
@@ -53,6 +55,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
 </body>
 
 </html>

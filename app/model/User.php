@@ -37,5 +37,24 @@ function create_user($name, $email, $cpf, $password) {
         return false;
     }
 }
+function deleteUser($userId) {
+    global $conn;
+
+    $query = "DELETE FROM users WHERE id = $1";
+    $result = pg_prepare($conn, "delete_user", $query);
+
+    if (!$result) {
+        die("Erro ao preparar a consulta: " . pg_last_error($conn));
+    }
+
+    $result = pg_execute($conn, "delete_user", [$userId]);
+
+    if ($result) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 
 ?>
