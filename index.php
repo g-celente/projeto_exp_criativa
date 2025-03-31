@@ -25,13 +25,24 @@ if (isset($_GET['page'])) {
         }
     }
 
-    if ($_GET['page'] == 2 && $_GET['id']) {
-        deleteUserById();
-        renderPage('app/view/Home.php');
+    if ($_GET['page'] == 2) {
+        if (isset($_GET['method'])) {
+            if ($_GET['method'] == 'delete') {
+                deleteUserById();
+                renderPage('app/view/Home.php');
+            } elseif ($_GET['method'] == 'alter') {
+                editUserById();
+                renderPage('app/view/Home.php');
+            }
+        } elseif (isset($_GET['id'])) {
+            renderPage('app/view/User/EditUserView.php');
+        }
     }
 
+    
+
 } else {
-    renderPage('app/view/Home.php', true);
+    renderPage('app/view/User/UserTableView.php', true);
 }
 
 ?>

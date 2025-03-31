@@ -40,10 +40,10 @@
                                         <td>{$resultado['name']}</td>
                                         <td>{$resultado['email']}</td>
                                         <td>
-                                            <a href='editar.php?id={$resultado['id']}' class='btn btn-warning btn-sm'>Alterar</a>
-                                            <a href='index.php?page=2&id={$resultado['id']}' class='btn btn-danger btn-sm' onclick=>Excluir</a>
-
+                                            <a href='index.php?page=2&id={$resultado['id']}' class='btn btn-warning btn-sm'>Alterar</a>
+                                            <a href='index.php?page=2&method=delete&id={$resultado['id']}' class='btn btn-danger btn-sm'>Excluir</a>
                                         </td>
+
                                       </tr>";
                             }
                         }
