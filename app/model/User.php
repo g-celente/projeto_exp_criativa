@@ -1,79 +1,63 @@
 <?php
-
 include __DIR__ . '/../../database/db.php';
 
-$conn = create_connection();
-
-function selectUser() {
-    global $conn;
+function authenticate($email, $senha) {
+    $conn = create_connection();
     
-    $query = "SELECT * FROM users";
-    $resultado = pg_query($conn, $query);
+    if (!$conn) {
+        return "Erro ao conectar ao banco de dados.";
+    }
+    
+    $email = pg_escape_string($conn, $email);
+    $senha = pg_escape_string($conn, $senha);
 
-    if (!$resultado) {
-        die("Erro ao executar consulta: " . pg_last_error($conn));
+    $query = "SELECT * FROM users WHERE email = '$email'";
+    $result = pg_query($conn, $query);
+
+    if (!$result) {
+        return "Erro ao executar a consulta ao banco de dados.";
     }
 
-    return pg_fetch_all($resultado);
+    $user = pg_fetch_assoc($result);
+    if ($user) {
+        if ($user['password'] === $senha) {
+            return $user;
+        } else {
+            return "Senha incorreta.";
+        }
+    } else {
+        return "E-mail não encontrado.";
+    }
 }
+
 
 function create_user($name, $email, $cpf, $password) {
-    global $conn; 
+    $conn = create_connection();
 
-    //$hashed_password = md5($password); 
+    $name = pg_escape_string($conn, $name);
+    $email = pg_escape_string($conn, $email);
+    $cpf = pg_escape_string($conn, $cpf);
+    $password = pg_escape_string($conn, $password);
 
-    $query = "INSERT INTO users (name, email, cpf, password, type_id) VALUES ($1, $2, $3, $4, 1)";
-    $result = pg_prepare($conn, "insert_user", $query);
+    $check_query = "SELECT id FROM users WHERE email = '$email' OR cpf = '$cpf'";
+    $check_result = pg_query($conn, $check_query);
 
-    if (!$result) {
-        die("Erro ao preparar a consulta: " . pg_last_error($conn));
+    if (pg_num_rows($check_result) > 0) {
+        return "Usuário já existe com este email ou CPF.";
     }
 
-    $result = pg_execute($conn, "insert_user", [$name, $email, $cpf, $password]);
+    $query = "INSERT INTO users (name, email, cpf, password) VALUES ('$name', '$email', '$cpf', '$password')";
+    $result = pg_query($conn, $query);
 
-    if ($result) {
-        return true;
-    } else {
-        return false;
-    }
+    return $result ? true : false;
 }
+
 function deleteUser($userId) {
-    global $conn;
+    global $mysqli;
 
-    $query = "DELETE FROM users WHERE id = $1";
-    $result = pg_prepare($conn, "delete_user", $query);
-
-    if (!$result) {
-        die("Erro ao preparar a consulta: " . pg_last_error($conn));
-    }
-
-    $result = pg_execute($conn, "delete_user", [$userId]);
-
-    if ($result) {
+    $sql_code = "DELETE FROM users WHERE id = $userId";
+    if ($mysqli->query($sql_code)) {
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
-
-function edit_user($userId, $name, $email, $cpf, $password) {
-    global $conn;
-
-    $query = "UPDATE users SET name = $1, email = $2, cpf = $3, password = $4 WHERE id = $5";
-    $result = pg_prepare($conn, "update_user", $query);
-
-    if (!$result) {
-        die("Erro ao preparar a consulta: " . pg_last_error($conn));
-    }
-
-    $result = pg_execute($conn, "update_user", [$name, $email, $cpf, $password, $userId]);
-
-    if ($result) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-
-?> 
