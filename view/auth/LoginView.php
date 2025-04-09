@@ -26,39 +26,22 @@ if (isset($_POST['email']) || isset($_POST['senha'])) {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Login</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link rel="stylesheet" href="../../assets/css/main.css">
 </head>
 
 <body>
     <div class="container">
         <div class="content first-content">
             <div class="first-column">
-                <h2 class="title title-primary">Olá, amigo!</h2>
+                <h2 class="title title-primary mb-1">Olá, amigo!</h2>
                 <p class="description description-primary">Entre com seus dados pessoais</p>
-                <p class="description description-primary">e comece sua jornada conosco</p>
+                <p class="description description-primary mb-2">e comece sua jornada conosco</p>
                 <a href="CadastroView.php" class="btn btn-primary">CADASTRAR</a>
             </div>
             <div class="second-column">
                 <h2 class="title title-second">Acesse sua conta</h2>
-                <div class="social-media">
-                    <ul class="list-social-media">
-                        <a class="link-social-media" href="#">
-                            <li class="item-social-media">
-                                <i class="fab fa-facebook-f"></i>
-                            </li>
-                        </a>
-                        <a class="link-social-media" href="#">
-                            <li class="item-social-media">
-                                <i class="fab fa-google-plus-g"></i>
-                            </li>
-                        </a>
-                        <a class="link-social-media" href="#">
-                            <li class="item-social-media">
-                                <i class="fab fa-linkedin-in"></i>
-                            </li>
-                        </a>
-                    </ul>
-                </div><!-- social media -->
-                <p class="description description-second">ou use seu e-mail:</p>
+           
+
                 <form class="form" method="POST">
                     <!-- Exibição de erros, caso existam -->
                     <?php if (isset($error) && $error): ?>
