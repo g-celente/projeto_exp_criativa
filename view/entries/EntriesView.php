@@ -7,14 +7,14 @@ $entriesList = listEntries();
 $bankAccountsList = getBankAccountsList();
 
 //Criar
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
+
     $categoria_id =(int)$_POST['categoria'];
     $conta_bancaria_id = (int)$_POST['conta_bancaria'];
     $transacao_valor = (float)str_replace(',', '.', $_POST['valor']); // Formata o valor decimal
     $transacao_descricao = $_POST['descricao'];
 
-    $result = createEntry($categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao);
+    $result = createEntry( $categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao);
 
     if ($result) {
         header("Location: " . $_SERVER['REQUEST_URI']);
@@ -31,16 +31,33 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     $result = deleteEntry($entryId); // Você precisará criar essa função no seu service
 
     if ($result) {
-        echo "<script>
-            alert('Entrada deletada com sucesso!');
-            window.location.href = window.location.pathname; // Recarrega a página sem parâmetros
-        </script>";
+        $base_url = strtok($_SERVER['REQUEST_URI'], '?'); // Remove query strings
+        header("Location: " . $base_url);
+        exit;
     } else {
         echo "<script>alert('Erro ao deletar entrada.');</script>";
     }
 }
 
+//editar
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_submit'])) {
+    $transacao_id = (int)$_POST['entry_id'];
+    $categoria_id = (int)$_POST['edit_categoria'];
+    $conta_bancaria_id = (int)$_POST['edit_conta_bancaria'];
+    $transacao_valor = (float)str_replace(',', '.', $_POST['edit_valor']);
+    $transacao_descricao = $_POST['edit_descricao'];
+
+    // Certifique-se de que esta função está implementada no EntriesService.php
+    $result = editEntry($transacao_id, $categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao);
+
+    if ($result) {
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit;
+    } else {
+        echo "<script>alert('Erro ao editar entrada.');</script>";
+    }
+}
 ?>
 
 <script>
@@ -58,13 +75,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-
-function confirmDelete(entryId) {
-    if (confirm('Tem certeza que deseja deletar esta entrada?')) {
-        // Se o usuário confirmar, redirecione para a ação de deletar
-        window.location.href = '?action=delete&id=' + entryId;
-    }
+const handleOpenEditModal = (entry) => {
+    document.getElementById('edit-entry-id').value = entry.transacao_id;
+    document.getElementById('edit_descricao').value = entry.transacao_descricao;
+    document.getElementById('edit_valor').value = entry.transacao_valor;
+    document.getElementById('edit_categoria').value = entry.categoria_id;
+    document.getElementById('edit_conta_bancaria').value = entry.conta_bancaria_id;
 }
+
 </script>
 
 <!DOCTYPE html>
@@ -118,7 +136,8 @@ function confirmDelete(entryId) {
                 echo "<td>" . (!empty($entry['categoria_id']) ? htmlspecialchars($entry['categoria_id']) : '-') . "</td>";
                 echo "<td>" . (!empty($entry['conta_bancaria_id']) ? htmlspecialchars($entry['conta_bancaria_id']) : '-') . "</td>";
                 echo "<td>
-                        <button class='btn btn-danger btn-sm' onclick='confirmDelete(" . $entry['transacao_id'] . ")'>Deletar</button>
+                        <a class='btn btn-danger btn-sm' id='delete-btn' href='./EntriesView.php?action=delete&id=". htmlspecialchars($entry['transacao_id']) . "'>Deletar</a>
+                        <button class='btn btn-primary btn-sm' id='edit-btn' data-bs-toggle='modal' data-bs-target='#editarModal' onClick='handleOpenEditModal(". json_encode($entry) . ")'>Editar</button>
                     </td>";
         
                 echo "</tr>";
@@ -128,11 +147,11 @@ function confirmDelete(entryId) {
             ?>
         </div>
 
-        <!-- MODAL PARA ADICIONAR ENTRADA -->
 
     </div>
 
-
+    <!-- MODAL PARA ADICIONAR ENTRADA -->
+        
     <div class="modal fade" id="adicionarModal" tabindex="-1" role="dialog" aria-labelledby="adicionarModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -183,6 +202,61 @@ function confirmDelete(entryId) {
                 </div>
             </form>
 
+            </div>
+        </div>
+    </div>
+
+       <!-- MODAL PARA EDITAR ENTRADA -->
+        
+       
+       <!-- MODAL PARA EDITAR ENTRADA -->
+    <div class="modal fade" id="editarModal" tabindex="-1" role="dialog" aria-labelledby="editarModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarModalLabel">Editar Entrada</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="post">
+                    <input type="hidden" name="entry_id" id="edit-entry-id">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit_descricao" class="form-label mb-1">Descrição:</label>
+                            <input type="text" class="form-control" id="edit_descricao" name="edit_descricao" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_valor" class="form-label mb-1">Valor:</label>
+                            <input type="number" step="0.01" class="form-control" id="edit_valor" name="edit_valor" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_categoria" class="form-label mb-1">Categoria:</label>
+                            <select class="form-control" id="edit_categoria" name="edit_categoria" required>
+                                <option value="1">Alimentação</option>
+                                <option value="2">Transporte</option>
+                                <option value="3">Educação</option>
+                                <option value="4">Lazer</option>
+                                <option value="5">Saúde</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_conta_bancaria" class="form-label mb-1">Conta bancária:</label>
+                            <select class="form-control" id="edit_conta_bancaria" name="edit_conta_bancaria">
+                                <option value="0">Nenhuma</option>
+                                <?php
+                                    foreach ($bankAccountsList as $account) {
+                                        echo "<option value='" . htmlspecialchars($account['id']) . "'>" . htmlspecialchars($account['nome']) . "</option>";
+                                    }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" name="edit_submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

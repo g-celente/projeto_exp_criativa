@@ -43,3 +43,40 @@ function newEntry($categoria_id, $conta_bancaria_id, $transacao_valor, $transaca
     return $result ? true : false;
 
 }
+
+function editEntryById($transacao_id, $categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao){
+    $conn = create_connection();
+
+    $transacao_id = pg_escape_string($conn, $transacao_id);
+    $categoria_id = pg_escape_string($conn, $categoria_id);
+    $conta_bancaria_id = pg_escape_string($conn, $conta_bancaria_id);
+    $transacao_valor = pg_escape_string($conn, $transacao_valor);
+    $transacao_descricao = pg_escape_string($conn, $transacao_descricao);
+    $usuario_id = $_SESSION['id'];
+    $transacao_tipo_id = 1; // 1 para entrada, 2 para saída
+
+    $query = "UPDATE transacoes
+                SET 
+                    categoria_id = '$categoria_id',
+                    conta_bancaria_id = '$conta_bancaria_id',
+                    transacao_valor = '$transacao_valor',
+                    transacao_descricao = '$transacao_descricao'
+                WHERE 
+                    transacao_id = '$transacao_id';
+            ";
+
+    $result = pg_query($conn, $query);
+
+
+    return $result ? true : false;
+
+}
+
+function deleteEntryById($transacao_id){
+    $conn = create_connection();
+    $transacao_id = pg_escape_string($conn, $transacao_id);
+    $query = "DELETE FROM transacoes WHERE transacao_id = $transacao_id";
+    $result = pg_query($conn, $query);
+
+    return $result ? true : false;
+}
