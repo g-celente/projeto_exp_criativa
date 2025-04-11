@@ -35,6 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Cadastro</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
         integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="../../assets/css/main.css">
 </head>
 
 <body>
@@ -42,33 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="content first-content">
             <!-- Exibe uma mensagem de boas-vindas e um botão que redireciona o usuário para a página de login (LoginView.php).  -->
             <div class="first-column">
-                <h2 class="title title-primary">Bem-vindo de volta!</h2>
+                <h2 class="title title-primary mb-1">Bem-vindo de volta!</h2>
                 <p class="description description-primary">Para se conectar conosco</p>
-                <p class="description description-primary">por favor faça login com suas informações pessoais</p>
+                <p class="description description-primary mb-2">por favor faça login com suas informações pessoais</p>
                 <a href="LoginView.php" class="btn btn-primary">Entrar</a>
             </div>
             <div class="second-column">
-                <h2 class="title title-second">Criar conta</h2>
-                <div class="social-media">
-                    <ul class="list-social-media">
-                        <a class="link-social-media" href="#">
-                            <li class="item-social-media">
-                                <i class="fab fa-facebook-f"></i>
-                            </li>
-                        </a>
-                        <a class="link-social-media" href="#">
-                            <li class="item-social-media">
-                                <i class="fab fa-google-plus-g"></i>
-                            </li>
-                        </a>
-                        <a class="link-social-media" href="#">
-                            <li class="item-social-media">
-                                <i class="fab fa-linkedin-in"></i>
-                            </li>
-                        </a>
-                    </ul>
-                </div><!-- social media -->
-                <p class="description description-second">ou use seu e-mail para se registrar:</p>
+                <h2 class="title title-second mb-1">Criar conta</h2>
 
                 <?php if (isset($error) && $error): ?>  <!-- Verifica se existe um erro e o exibe -->
                     <div class="alert-danger"><?= htmlspecialchars($error) ?></div>
