@@ -169,7 +169,7 @@ const handleOpenEditModal = (entry) => {
                     </div>
           
                     <div class="mb-3">
-                        <label for="conta_bancaria" class="form-label mb-1">Conta bancaria (opcional):</label>
+                        <label for="conta_bancaria" class="form-label mb-1">Conta bancaria:</label>
                         <select class="form-control" id="conta_bancaria" name="conta_bancaria" required>
                             <!-- Opções de categoria devem ser preenchidas aqui -->
                             <option value="#" disabled selected hidden>Selecione uma Opção...</option>
