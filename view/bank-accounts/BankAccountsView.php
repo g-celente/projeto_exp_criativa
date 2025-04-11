@@ -1,19 +1,17 @@
 <?php
 include("../../protected.php");
-include('../../app/service/EntriesService.php');
+
 include('../../app/service/BankAccountService.php');
 
-$entriesList = listEntries();
+
 $bankAccountsList = getBankAccountsList();
 
 //Criar
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 
-    $conta_bancaria_id = (int)$_POST['conta_bancaria'];
-    $transacao_valor = (float)str_replace(',', '.', $_POST['valor']); 
-    $transacao_descricao = $_POST['descricao'];
+    $nome = $_POST['nome'];
 
-    $result = createEntry(  $conta_bancaria_id, $transacao_valor, $transacao_descricao);
+    $result = newBankAccount($nome);
 
     if ($result) {
         header("Location: " . $_SERVER['REQUEST_URI']);
@@ -26,8 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 
 //deletar
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
-    $entryId = (int)$_GET['id'];
-    $result = deleteEntry($entryId); 
+    $account_id = (int)$_GET['id'];
+    var_dump($account_id);
+    $result = deleteBankAccount($account_id); 
 
     if ($result) {
         $base_url = strtok($_SERVER['REQUEST_URI'], '?'); 
@@ -39,16 +38,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 }
 
 //editar
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_submit'])) {
-    $transacao_id = (int)$_POST['entry_id'];
-
-    $conta_bancaria_id = (int)$_POST['edit_conta_bancaria'];
-    $transacao_valor = (float)str_replace(',', '.', $_POST['edit_valor']);
-    $transacao_descricao = $_POST['edit_descricao'];
-
-    
-    $result = editEntry($transacao_id,  $conta_bancaria_id, $transacao_valor, $transacao_descricao);
+    $account_id = (int)$_POST['account_id'];
+    $nome = $_POST['edit_nome'];
+  
+    $result = editBankAccount($account_id, $nome);
 
     if ($result) {
         header("Location: " . $_SERVER['REQUEST_URI']);
@@ -74,11 +68,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-const handleOpenEditModal = (entry) => {
-    document.getElementById('edit-entry-id').value = entry.transacao_id;
-    document.getElementById('edit_descricao').value = entry.transacao_descricao;
-    document.getElementById('edit_valor').value = entry.transacao_valor;
-    document.getElementById('edit_conta_bancaria').value = entry.conta_bancaria_id;
+const handleOpenEditModal = (account) => {
+    document.getElementById('edit_account_id').value = account.id;
+    document.getElementById('edit_nome').value = account.nome;
 }
 
 </script>
@@ -100,13 +92,13 @@ const handleOpenEditModal = (entry) => {
     <?php include("../../assets/templates/sideBar/BaseSideBar.php")?>
 
     <div class="main-content">
-        <h1>Entradas</h1>
+        <h1>Contas Bancárias</h1>
        
-        <p>Visualize e gerencie suas entradas financeiras</p>
+        <p>Visualize e gerencie suas contas bancárias</p>
         
         <div class="flex align-center justify-between">
             <input type="text" placeholder="Buscar entrada..." class="search-input" >
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarModal">Adicionar Entrada</button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarModal">Adicionar Conta</button>
 
         </div>
 
@@ -118,24 +110,20 @@ const handleOpenEditModal = (entry) => {
             echo "<thead>";
             echo "<tr>";
             echo "<th>ID</th>";
-            echo "<th>Descrição</th>";
-            echo "<th>Valor</th>";
-            echo "<th>Conta Bancária</th>";
+            echo "<th>Nome</th>";
             echo "<th>Ações</th>";
             echo "</tr>";
             echo "</thead>";
             echo "<tbody>";
-            foreach($entriesList as $entry) {
+            foreach($bankAccountsList as $account) {
+              
                 echo "<tr>";
-                echo "<td>" . (!empty($entry['transacao_id']) ? htmlspecialchars($entry['transacao_id']) : '-') . "</td>";
-                echo "<td>" . (!empty($entry['transacao_descricao']) ? htmlspecialchars($entry['transacao_descricao']) : '-') . "</td>";
-                echo "<td>" . (!empty($entry['transacao_valor']) ? htmlspecialchars($entry['transacao_valor']) : '-') . "</td>";
-                echo "<td>" . (!empty($entry['conta_bancaria_nome']) ? htmlspecialchars($entry['conta_bancaria_nome']) : '-') . "</td>";
+                echo "<td>" . (!empty($account['id']) ? htmlspecialchars($account['id']) : '-') . "</td>";
+                echo "<td>" . (!empty($account['nome']) ? htmlspecialchars($account['nome']) : '-') . "</td>";
                 echo "<td>
-                        <a class='btn btn-danger btn-sm' id='delete-btn' href='./EntriesView.php?action=delete&id=". htmlspecialchars($entry['transacao_id']) . "'>Deletar</a>
-                        <button class='btn btn-primary btn-sm' id='edit-btn' data-bs-toggle='modal' data-bs-target='#editarModal' onClick='handleOpenEditModal(". json_encode($entry) . ")'>Editar</button>
+                        <a class='btn btn-danger btn-sm' id='delete-btn' href='./BankAccountsView.php?action=delete&id=". htmlspecialchars($account['id']) . "'>Deletar</a>
+                        <button class='btn btn-primary btn-sm' id='edit-btn' data-bs-toggle='modal' data-bs-target='#editarModal' onClick='handleOpenEditModal(". json_encode($account) . ")'>Editar</button>
                     </td>";
-        
                 echo "</tr>";
             }
             echo "</tbody>";
@@ -152,7 +140,7 @@ const handleOpenEditModal = (entry) => {
         <div class="modal-dialog" role="document">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="adicionarModalLabel">Adicionar Entrada</h5>
+                <h5 class="modal-title" id="adicionarModalLabel">Adicionar Conta Bancária</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -160,25 +148,8 @@ const handleOpenEditModal = (entry) => {
             <form method="post">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="descricao" class="form-label mb-1">Descrição:</label>
-                        <input type="text" class="form-control" id="descricao" name="descricao" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="valor" class="form-label mb-1">Valor:</label>
-                        <input type="number" class="form-control" id="valor" name="valor" required>
-                    </div>
-          
-                    <div class="mb-3">
-                        <label for="conta_bancaria" class="form-label mb-1">Conta bancaria (opcional):</label>
-                        <select class="form-control" id="conta_bancaria" name="conta_bancaria" required>
-                            <!-- Opções de categoria devem ser preenchidas aqui -->
-                            <option value="#" disabled selected hidden>Selecione uma Opção...</option>
-                            <?php
-                                foreach ($bankAccountsList as $account) {
-                                    echo "<option value='" . htmlspecialchars($account['id']) . "'>" . htmlspecialchars($account['nome']) . "</option>";
-                                }
-                            ?>
-                        </select>
+                        <label for="nome" class="form-label mb-1">Nome:</label>
+                        <input type="text" class="form-control" id="nome" name="nome" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -197,34 +168,19 @@ const handleOpenEditModal = (entry) => {
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editarModalLabel">Editar Entrada</h5>
+                    <h5 class="modal-title" id="editarModalLabel">Editar Conta Bancária</h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <form method="post">
-                    <input type="hidden" name="entry_id" id="edit-entry-id">
+                    <input type="hidden" name="account_id" id="edit_account_id">
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="edit_descricao" class="form-label mb-1">Descrição:</label>
-                            <input type="text" class="form-control" id="edit_descricao" name="edit_descricao" required>
+                            <label for="edit_nome" class="form-label mb-1">Descrição:</label>
+                            <input type="text" class="form-control" id="edit_nome" name="edit_nome" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="edit_valor" class="form-label mb-1">Valor:</label>
-                            <input type="number" step="0.01" class="form-control" id="edit_valor" name="edit_valor" required>
-                        </div>
-                    
-                        <div class="mb-3">
-                            <label for="edit_conta_bancaria" class="form-label mb-1">Conta bancária:</label>
-                            <select class="form-control" id="edit_conta_bancaria" name="edit_conta_bancaria">
-                                <option value="0">Nenhuma</option>
-                                <?php
-                                    foreach ($bankAccountsList as $account) {
-                                        echo "<option value='" . htmlspecialchars($account['id']) . "'>" . htmlspecialchars($account['nome']) . "</option>";
-                                    }
-                                ?>
-                            </select>
-                        </div>
+                      
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
