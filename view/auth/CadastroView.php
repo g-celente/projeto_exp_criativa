@@ -1,16 +1,24 @@
 <?php
+
+//  inclui o arquivo "UserService.php", que contém a lógica de negócios para o registro de usuários.
+//  A função register() será usada para processar os dados do formulário.
 include __DIR__ . '/../../app/service/UserService.php';
 
+// Variavel ira armazenar uma mensagem de erro
 $error = null;
 
+// Verifica se o método de requisição é POST, o que indica que o formulário foi enviado.
+// Resgata os dados do formulario, atribuindo valores padrão caso não sejam fornecidos.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'] ?? '';
     $email = $_POST['email'] ?? '';
     $cpf = $_POST['cpf'] ?? '';
     $password = $_POST['password'] ?? '';
 
+    // Chama a função registe() no arquivo "UserService.php" para registrar o usuário com os dados fornecidos.
     $result = register($name, $email, $cpf, $password);
 
+    // Caso a funcao register() retorne um valor diferente de true, o erro sera armazenado
     if ($result !== true) {
         $error = $result;
     }
@@ -32,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
         <div class="content first-content">
+            <!-- Exibe uma mensagem de boas-vindas e um botão que redireciona o usuário para a página de login (LoginView.php).  -->
             <div class="first-column">
                 <h2 class="title title-primary">Bem-vindo de volta!</h2>
                 <p class="description description-primary">Para se conectar conosco</p>
@@ -61,14 +70,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div><!-- social media -->
                 <p class="description description-second">ou use seu e-mail para se registrar:</p>
 
-                <?php if (isset($error) && $error): ?>
+                <?php if (isset($error) && $error): ?>  <!-- Verifica se existe um erro e o exibe -->
                     <div class="alert-danger"><?= htmlspecialchars($error) ?></div>
-                <?php elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error): ?>
+                <?php elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error): ?>   <!--Verifica o metodo de requisicao e a presenca de outros erros-->
                     <div class="alert-success">
-                        Cadastro realizado com sucesso! <a href="login.php">Clique aqui para fazer login</a>
+                        Cadastro realizado com sucesso! <a href="login.php">Clique aqui para fazer login</a> <!--Exibe uma mensagem de sucesso, e um link para a pagina de login-->
                     </div>
                 <?php endif; ?>
 
+                <!-- Formulario de registro -->
                 <form class="form" method="POST">
                     <label class="label-input" for="name">
                         <i class="far fa-user icon-modify"></i>
@@ -91,6 +101,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </label>
 
                     <button type="submit" class="btn btn-second">Cadastrar</button>
+                    <!-- Como o atributo action não está especificado no <form>, 
+                    o formulário será enviado para o mesmo arquivo em que está sendo exibido, ou seja, CadastroView.php. -->
+
                 </form>
             </div><!-- second column -->
         </div><!-- first content -->

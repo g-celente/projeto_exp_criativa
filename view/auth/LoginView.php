@@ -1,19 +1,23 @@
 <?php
+
+// Inclui o arquivo "UserService.php" que contém funções relacionadas ao banco de dados
+// login() chama authenticate() e register() em "UserService.php"
 include('../../app/service/UserService.php');
 
 $error = null;
 
-if (isset($_POST['email']) || isset($_POST['senha'])) {
+if (isset($_POST['email']) || isset($_POST['senha'])) {  // Verifica se o email e a senha foram preenchidos, e o metodo de requisicao
     $email = $_POST['email'];
     $senha = $_POST['senha'];
 
-    $result = login($email, $senha);
+    $result = login($email, $senha);        // Chama a função login definida em UserService.php para verificar as credenciais no banco de dados.
 
-    if ($result === true) {
-        header("Location: ../Home.php");
+    if ($result === true) {                 // Verifica se o login foi bem-sucedido
+        header("Location: ../Home.php");    // Redireciona para a página inicial
+        exit();                            
     }
 
-    $error = $result;
+    $error = $result; //????
 }
 ?>
 
@@ -62,10 +66,10 @@ if (isset($_POST['email']) || isset($_POST['senha'])) {
                 <form class="form" method="POST">
                     <!-- Exibição de erros, caso existam -->
                     <?php if (isset($error) && $error): ?>
-                        <div class="alert-danger"><?= htmlspecialchars($error) ?></div>
-                    <?php elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error): ?>
+                        <div class="alert-danger"><?= htmlspecialchars($error) ?></div> <!-- Exibe a mensagem de erro, se atentando a injecoes -->
+                    <?php elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error): ?> <!-- Verifica se o método de requisição é POST e se não há erro -->
                         <div class="alert-success">
-                            Cadastro realizado com sucesso! <a href="login.php">Clique aqui para fazer login</a>
+                            Cadastro realizado com sucesso! <a href="login.php">Clique aqui para fazer login</a> <!-- Link para fazer login após o cadastro -->
                         </div>
                     <?php endif; ?>
 
@@ -81,12 +85,14 @@ if (isset($_POST['email']) || isset($_POST['senha'])) {
 
                     <a class="password" href="#">Esqueceu sua senha?</a>
                     <button type="submit" class="btn btn-second">Entrar</button>
+                    <!-- Como o atributo action não está especificado no <form>, 
+                    o formulário será enviado para o mesmo arquivo em que está sendo exibido, ou seja, LoginView.php. -->
                 </form>
             </div><!-- second column -->
         </div><!-- first content -->
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {});
+        document.addEventListener('DOMContentLoaded', function() {}); // ??????????
     </script>
 </body>
 

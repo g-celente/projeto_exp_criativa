@@ -9,9 +9,9 @@
     </div>
     <ul class="sidebar-nav">
         <li class="sidebar-item">
-            <a href="#" class="sidebar-link">
+            <a href="/projeto_exp_criativa/projeto%20final/view/cards/CardsView.php" class="sidebar-link">
                 <i class="lni lni-user"></i>
-                <span>Profile</span>
+                <span>Meus Cartoes</span>
             </a>
         </li>
         <li class="sidebar-item">

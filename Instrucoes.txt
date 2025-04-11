@@ -1,0 +1,72 @@
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+REGISTRO DE USUARIOS:
+- O arquivo "CadastroView.php" contem o formulario de registro.
+- Quando o formulario é enviado, os dados são enviados via POST para a função register() no "UserService.php"
+- A função register() chama a função create_user() no "UserService.php", que faz as verificações necessarias antes de inserir os dados no banco
+- Apos o registro bem sucedido, o usuario é redirecionado para a pagina de login
+
+LOGIN DE USUARIO:
+- O arquivo "LoginView.php" contem o formulario de login
+- Quando o formulario é enviado, os dados sao enviados via POST para login() no arquivo "UserService.php"
+- A funcao login() chama authenticate() em "User.php" que verifica se o email e a senha correspondem as no BD e retorna os dados se o processo for bem sucedido
+- Apos o login bem sucedido, a sessao é iniciada e o usuário é redirecionado para a pagina principal "Home.php"
+
+ACESSO AO PAINEL:
+- A pagina "Home.php" é protegida por "protected.php", que verifica se o usuario esta logado
+- Caso o usuario nao esteja logado, é redirecionado para a pagina de login
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ESTRUTURA DE ARQUIVOS:
+- "User.php": Contem as funcoes relacionadas ao banco de dados (ex: autenticacao e criacao de users)
+- "UserService.php" : Contem as funcoes de logica (login e cadastro)
+- "db.php" : Configura a conexão com o BD PostgreSQL
+- "LoginView.php e CadastroView.php": Formularios de login e registro
+- "Home.php": Página principal, acessavel apenas por usuarios autenticados
+- "Protected.php" : Verifica se o usuario esta logado antes de permitir acesso a "Home.php"
+- "BaseSideBar.php": HTML e CSS para a barra lateral
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+BANCO DE DADOS: 
+-TABELA USERS:
+    - id,
+    - name,
+    - email,
+    - cpf,
+    - password;
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+FLUXO DE SEGURANÇA:
+- Sessoes: mantem o estado de login do usuario.
+- Proteção de páginas: "protected.php" impede o acesso nao autorizado as paginas protegidas
+- Validação de dados:  utilizam pg_escape_string para evitar injecao SQL
+    -pg_escape_string : funcao sanitize() usada para filtrar inputs
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DETALHAMENTO DE PASTAS
+1.RAIZ DO PROJETO:
+- "protected.php" : Arquivo que protege paginas restritas, verificando se o usuario esta logado.
+- ".gitignore" : Define arquivos que nao devem ser versionados pelo git.
+
+2.QODO:
+- "history.sqlite" : ?????
+
+3.APP:
+- Model/"User.php" : Define funcoes relacionadas ao banco (autenticacao e criacao de usuarios)
+- Service/"UserService".php : implementa funcoes de login, registro e exclusao de usuarios utilizando as funcoes do model
+
+4.ASSETS:
+-templates/sideBar/"BaseSideBar.php" : HTML e CSS da barra lateral
+
+5.DATABASE:
+- "db.php" : Configura a conexao com o banco PostgreSQL
+- "test_connection.php" : Testa a conexao com o banco e lista as tabelas disponiveis
+
+6.VIEW:
+- "Home.php" : Pagina principal, acessivel somente por usuarios cadastrados (protegida por "protected.php")
+
+7.VIEW/AUTH:
+- "CadastroView.php" : Formulario de registro de usuarios
+- "LoginView.php" : Formulario de login de usuarios
