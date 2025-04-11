@@ -12,7 +12,7 @@
             <a href="../entries/EntriesView.php"><i class="fas fa-exchange-alt"></i>Entradas</a>
         </li>
         <li class="nav-item">
-            <a href=""><i class="fas fa-history"></i>Saídas</a>
+            <a href="../expenses/ExpensesView.php"><i class="fas fa-history"></i>Saídas</a>
         </li>
         <li class="nav-item">
             <a href="../bank-accounts/BankAccountsView.php"><i class="fa-solid fa-building-columns"></i>Contas Bancárias</a>

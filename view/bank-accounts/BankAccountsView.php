@@ -97,7 +97,7 @@ const handleOpenEditModal = (account) => {
         <p>Visualize e gerencie suas contas bancárias</p>
         
         <div class="flex align-center justify-between">
-            <input type="text" placeholder="Buscar entrada..." class="search-input" >
+            <input type="text" placeholder="Buscar..." class="search-input" >
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarModal">Adicionar Conta</button>
 
         </div>
@@ -134,7 +134,7 @@ const handleOpenEditModal = (account) => {
 
     </div>
 
-    <!-- MODAL PARA ADICIONAR ENTRADA -->
+    <!-- MODAL PARA ADICIONAR -->
         
     <div class="modal fade" id="adicionarModal" tabindex="-1" role="dialog" aria-labelledby="adicionarModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -163,7 +163,7 @@ const handleOpenEditModal = (account) => {
     </div>
         
        
-       <!-- MODAL PARA EDITAR ENTRADA -->
+       <!-- MODAL PARA EDITAR -->
     <div class="modal fade" id="editarModal" tabindex="-1" role="dialog" aria-labelledby="editarModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
