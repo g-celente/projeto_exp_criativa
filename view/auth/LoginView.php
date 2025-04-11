@@ -13,7 +13,7 @@ if (isset($_POST['email']) || isset($_POST['senha'])) {  // Verifica se o email 
     $result = login($email, $senha);        // Chama a função login definida em UserService.php para verificar as credenciais no banco de dados.
 
     if ($result === true) {                 // Verifica se o login foi bem-sucedido
-        header("Location: ../Home.php");    // Redireciona para a página inicial
+        header("Location: ../home/HomeView.php");    // Redireciona para a página inicial
         exit();                            
     }
 
