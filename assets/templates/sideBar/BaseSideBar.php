@@ -4,16 +4,16 @@
 
     <ul class="nav-menu">
         <li class="nav-item active">
-            <a href="/teste/view/Home.php"><i class="fas fa-chart-line"></i>Dashboard</a>
+            <a href="../home/HomeView.php"><i class="fas fa-chart-line"></i>Dashboard</a>
         </li>
         <li class="nav-item">
-            <a href=""><i class="fas fa-exchange-alt"></i>Entradas</a>
+            <a href="../entries/EntriesView.php"><i class="fas fa-exchange-alt"></i>Entradas</a>
         </li>
         <li class="nav-item">
             <a href=""><i class="fas fa-history"></i>Saídas</a>
         </li>
         <li class="nav-item">
-            <a href="/teste/view/cards/CardsView.php"><i class="fas fa-wallet"></i>Cartões</a>
+            <a href="../cards/CardsView.php"><i class="fas fa-wallet"></i>Cartões</a>
         </li>
         <li class="nav-item">
             <a href=""><i class="fas fa-credit-card"></i>Credits</a>

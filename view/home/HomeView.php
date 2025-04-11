@@ -1,5 +1,5 @@
 <?php
-include("../protected.php");
+include("../../protected.php");
 ?>
 
 <!DOCTYPE html>
@@ -11,12 +11,12 @@ include("../protected.php");
     <title>Painel</title>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/main.css">
 </head>
 
 <body>
 
-    <?php include("../assets/templates/sideBar/BaseSideBar.php")?>
+    <?php include("../../assets/templates/sideBar/BaseSideBar.php")?>
 
     <div class="main-content">
         <h1>Bem-vindo, <?php echo htmlspecialchars($_SESSION['name']); ?></h1>
