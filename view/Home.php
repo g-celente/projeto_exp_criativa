@@ -11,17 +11,16 @@ include("../protected.php");
     <title>Painel</title>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/main.css">
 </head>
 
 <body>
-    <div class="wrapper">
-        <aside id="sidebar"><?php include("../assets/templates/sideBar/BaseSideBar.php"); ?></aside>
 
-        <div class="main-content">
-            <h1>Bem-vindo, <?php echo htmlspecialchars($_SESSION['name']); ?></h1>
-            <p>Conteúdo principal do seu painel aqui</p>
-            <!-- Restante do seu conteúdo -->
-        </div>
+    <?php include("../assets/templates/sideBar/BaseSideBar.php")?>
+
+    <div class="main-content">
+        <h1>Bem-vindo, <?php echo htmlspecialchars($_SESSION['name']); ?></h1>
+        <p>Conteúdo principal do seu painel aqui</p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
@@ -31,25 +30,4 @@ include("../protected.php");
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap');
-
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
-
-    body {
-        font-family: 'Open Sans', sans-serif;
-        background-color: #ecf0f1;
-        overflow-x: hidden;
-    }
-
-    .wrapper {
-        display: flex;
-        min-height: 100vh;
-        width: 100%;
-    }
-
-
-    /* Seus outros estilos da sidebar aqui */
 </style>

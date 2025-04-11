@@ -3,35 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PayMe Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+    <title>MoneyTrack</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
 </head>
 <body>
-    
-    <!-- Sidebar de Navegação -->
-    <div class="nav-sidebar">
-        <div class="logo">PayMe</div>
-        
-        <ul class="nav-menu">
-            <li class="nav-item active">
-                <i class="fas fa-chart-line"></i> Dashboard
-            </li>
-            <li class="nav-item">
-                <i class="fas fa-exchange-alt"></i> Actions
-            </li>
-            <li class="nav-item">
-                <i class="fas fa-history"></i> History
-            </li>
-            <li class="nav-item">
-                <i class="fas fa-wallet"></i> Deposits
-            </li>
-            <li class="nav-item">
-                <i class="fas fa-credit-card"></i> Credits
-            </li>
-        </ul>
-    </div>
-
+    <?php include "../../assets/templates/sideBar/BaseSideBar.php"; ?>
     <!-- Main Content -->
     <div class="main-content">
         <!-- Área de Cartões no Topo -->
@@ -182,58 +158,6 @@
 </body>
 </html>
 <style>
-        /* Reset e Estilos Gerais */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
-        
-        body {
-            background-color: #f8fafc;
-            color: #1e293b;
-            display: flex;
-            min-height: 100vh;
-        }
-        
-        /* Sidebar de Navegação */
-        .nav-sidebar {
-            width: 220px;
-            background-color: white;
-            padding: 25px;
-            border-right: 1px solid #e2e8f0;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
-        }
-        
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #3b82f6;
-            margin-bottom: 30px;
-        }
-        
-        .nav-menu {
-            list-style: none;
-        }
-        
-        .nav-item {
-            padding: 12px 0;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-        }
-        
-        .nav-item.active {
-            color: #3b82f6;
-            font-weight: 500;
-        }
-        
-        .nav-item i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
         
         /* Área de Cartões no Topo */
         .cards-container {
@@ -331,12 +255,7 @@
             font-size: 12px;
             margin-top: 10px;
         }
-        
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 30px 40px;
-        }
+
         
         /* Card Stats */
         .stats-grid {
