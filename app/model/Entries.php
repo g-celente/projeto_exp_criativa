@@ -39,7 +39,6 @@ function newEntry($categoria_id, $conta_bancaria_id, $transacao_valor, $transaca
 
     $result = pg_query($conn, $query);
 
-
     return $result ? true : false;
 
 }

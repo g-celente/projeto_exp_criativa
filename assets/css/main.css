@@ -232,7 +232,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Arial, sans-serif;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
 body {
@@ -296,7 +296,7 @@ body {
 
 .nav-item a {
   text-decoration: none;
-  color: rgb(88, 88, 88);/* ícones azuis */
+  color: rgb(88, 88, 88); /* ícones azuis */
 }
 
 .nav-item:hover {

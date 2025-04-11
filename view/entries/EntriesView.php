@@ -205,8 +205,6 @@ const handleOpenEditModal = (entry) => {
             </div>
         </div>
     </div>
-
-
         
        
        <!-- MODAL PARA EDITAR ENTRADA -->
@@ -289,8 +287,8 @@ const handleOpenEditModal = (entry) => {
     }
     
     .table thead th {
-        background-color: #4a90e2;
-        color: white;
+        background-color:rgb(240, 240, 240);
+    
         font-weight: 600;
         padding: 15px;
         border: none;
