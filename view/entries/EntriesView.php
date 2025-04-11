@@ -206,7 +206,7 @@ const handleOpenEditModal = (entry) => {
         </div>
     </div>
 
-       <!-- MODAL PARA EDITAR ENTRADA -->
+
         
        
        <!-- MODAL PARA EDITAR ENTRADA -->
