@@ -125,7 +125,7 @@ if (isset($_POST['email']) || isset($_POST['senha'])) {  // Verifica se o email 
     .content::before {
         content: "";
         position: absolute;
-        background-color: #58af9b;
+        background-color: var(--primary-color);
         width: 40%;
         height: 100%;
         border-top-left-radius: 15px;
@@ -144,7 +144,7 @@ if (isset($_POST['email']) || isset($_POST['senha'])) {  // Verifica se o email 
     }
 
     .title-second {
-        color: #58af9b;
+        color: var(--primary-color);
     }
 
     .description {
@@ -183,19 +183,19 @@ if (isset($_POST['email']) || isset($_POST['senha'])) {  // Verifica se o email 
 
     .btn-primary:hover {
         background-color: #fff;
-        color: #58af9b;
+        color: var(--primary-color);
     }
 
     .btn-second {
-        background-color: #58af9b;
-        border: 1px solid #58af9b;
+        background-color: var(--primary-color);
+        border: 1px solid var(--primary-color);
         transition: background-color .5s;
     }
 
     .btn-second:hover {
         background-color: #fff;
-        border: 1px solid #58af9b;
-        color: #58af9b;
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
     }
 
     .first-content {
@@ -236,9 +236,9 @@ if (isset($_POST['email']) || isset($_POST['senha'])) {  // Verifica se o email 
     }
 
     .link-social-media:hover .item-social-media {
-        background-color: #58af9b;
+        background-color: var(--primary-color);
         color: #fff;
-        border-color: #58af9b;
+        border-color: var(--primary-color);
     }
 
     .list-social-media {

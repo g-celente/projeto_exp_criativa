@@ -184,7 +184,7 @@
         
         /* Estilo dos Cartões */
         .card {
-            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            background: linear-gradient(135deg, var(--primary-color), #6366f1);
             color: white;
             border-radius: 12px;
             padding: 20px;
@@ -342,7 +342,7 @@
             padding: 12px;
             border: none;
             border-radius: 8px;
-            background-color: #3b82f6;
+            background-color: var(--primary-color);
             color: white;
             font-weight: 500;
             cursor: pointer;
@@ -380,7 +380,7 @@
             position: absolute;
             width: 50%;
             height: 100%;
-            background-color: #3b82f6;
+            background-color: var(--primary-color);
             top: 0;
             left: 0;
             z-index: -1;
@@ -390,7 +390,7 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background-color: #3b82f6;
+            background-color: var(--primary-color);
             color: white;
             display: flex;
             align-items: center;

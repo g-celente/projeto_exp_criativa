@@ -1,4 +1,6 @@
 /* Padding */
+
+@import "./variables.css";
 .p-1 {
   padding: 1rem;
 }
@@ -268,7 +270,7 @@ body {
 .logo {
   font-size: 24px;
   font-weight: bold;
-  color: #3b82f6;
+  color: var(--primary-color);
   margin-bottom: 30px;
 }
 
@@ -291,7 +293,7 @@ body {
   margin-right: 10px;
   width: 20px;
   text-align: center;
-  color: #3b82f6; /* ícones azuis */
+  color: var(--primary-color); /* ícones azuis */
 }
 
 .nav-item a {
@@ -300,14 +302,14 @@ body {
 }
 
 .nav-item:hover {
-  color: #3b82f6;
+  color: var(--primary-color);
   background-color: #f1f5f9;
   padding-left: 10px;
   border-radius: 8px;
 }
 
 .nav-item.active {
-  color: #3b82f6;
+  color: var(--primary-color);
   font-weight: 500;
 }
 
@@ -325,13 +327,13 @@ body {
 
 .logout i {
   margin-right: 10px;
-  color: #3b82f6;
+  color: var(--primary-color);
   width: 20px;
   text-align: center;
 }
 
 .logout:hover {
-  color: #3b82f6;
+  color: var(--primary-color);
   background-color: #f1f5f9;
   padding-left: 10px;
   border-radius: 8px;

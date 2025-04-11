@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .content::before {
         content: "";
         position: absolute;
-        background-color: #58af9b;
+        background-color: var(--primary-color);
         width: 40%;
         height: 100%;
         border-top-left-radius: 15px;
@@ -156,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     .title-second {
-        color: #58af9b;
+        color: var(--primary-color);
     }
 
     .description {
@@ -195,19 +195,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     .btn-primary:hover {
         background-color: #fff;
-        color: #58af9b;
+        color: var(--primary-color);
     }
 
     .btn-second {
-        background-color: #58af9b;
-        border: 1px solid #58af9b;
+        background-color: var(--primary-color);
+        border: 1px solid var(--primary-color);
         transition: background-color .5s;
     }
 
     .btn-second:hover {
         background-color: #fff;
-        border: 1px solid #58af9b;
-        color: #58af9b;
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
     }
 
     .first-content {
@@ -244,9 +244,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     .link-social-media:hover .item-social-media {
-        background-color: #58af9b;
+        background-color: var(--primary-color);
         color: #fff;
-        border-color: #58af9b;
+        border-color: var(--primary-color);
     }
 
     .list-social-media {
