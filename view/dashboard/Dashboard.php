@@ -4,7 +4,7 @@
 include("../../database/db.php");
 session_start();
 if (!isset($_SESSION['id'])) {
-    header("Location: ../../login.php"); 
+    header("Location: ../../login.php");
     exit();
 }
 
@@ -50,8 +50,8 @@ function getRecentTransactions()
                      FROM transacoes t
                      JOIN categorias c ON t.categoria_id = c.categoria_id
                      WHERE t.usuario_id = '$usuario_id'";
-                    //  ORDER BY t.transacao_id DESC LIMIT 5";
-    $result = pg_query($conn , $query);
+    //  ORDER BY t.transacao_id DESC LIMIT 5";
+    $result = pg_query($conn, $query);
     return pg_fetch_all($result) ?: [];
 }
 function getExpensesByCategory()
@@ -244,6 +244,7 @@ function getBalanceEvolution()
             font-size: 24px;
             font-weight: 700;
         }
+
         .stat-icon {
             width: 48px;
             height: 48px;
@@ -296,13 +297,15 @@ function getBalanceEvolution()
         }
 
         .chart {
-            height: 400px;
             background-color: #E5DEFF;
             border-radius: 8px;
+            padding: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 500;
+            flex-direction: column;
+            height: auto;
+            width: 100%;
         }
 
         /* GRAFICO DE COMPARACAO */
@@ -372,6 +375,11 @@ function getBalanceEvolution()
             /* revenue background */
             color: #10B981;
             /* revenue */
+        }
+
+        canvas {
+            width: 100% !important;
+            height: auto !important;
         }
     </style>
 </head>
@@ -455,9 +463,10 @@ function getBalanceEvolution()
                         <div class="tab-panel" id="overview">
                             <div class="charts-grid">
                                 <div class="chart">
-                                    Gráfico de Despesas
-                                    <br>
-                                    <canvas id="expensesPieChart" height="250" width="250" style="width: 100%; height:auto;"></canvas>
+                                    <p>Gráfico de Despesas</p>
+                                    <div style="position: relative; width: 100%; max-width: 400px;">
+                                        <canvas id="expensesPieChart"></canvas>
+                                    </div>
                                 </div>
                                 <div class="chart">
                                     Gráfico de Saldo
@@ -470,34 +479,32 @@ function getBalanceEvolution()
                 </div>
             </section>
 
-
-            <!-- TABELA COMPARATIVA -->
-            <section class="comparative-section">
+            <!-- <section class="comparative-section">
                 <h3 class="chart-title">Análise comparativa</h3>
                 <DIV class="chart" style="height:400px;">
                     Comparativo entre periodos
                     <br>
                 </DIV>
-            </section>
+            </section> -->
 
 
             <!-- HISTORICO -->
             <div class="filter-panel">
-                    <div class="select-container">
-                        <select>
-                            <option>Todas</option>
-                            <option>Entradas</option>
-                            <option>Saidas</option>
-                        </select>
-                    </div>
-                    <div class="select-container">
-                        <input type="number" placeholder="Valor mínimo">
-                    </div>
-                    <div class="select-container">
-                        <input type="number" placeholder="Valor máximo">
-                    </div>
-                    <button class="filter-button">Filtrar</button>
+                <div class="select-container">
+                    <select>
+                        <option>Todas</option>
+                        <option>Entradas</option>
+                        <option>Saidas</option>
+                    </select>
                 </div>
+                <div class="select-container">
+                    <input type="number" placeholder="Valor mínimo">
+                </div>
+                <div class="select-container">
+                    <input type="number" placeholder="Valor máximo">
+                </div>
+                <button class="filter-button">Filtrar</button>
+            </div>
             <section class="table-container">
                 <h3 class="chart-title">Ultimas transacoes</h3>
                 <table>
@@ -513,9 +520,9 @@ function getBalanceEvolution()
                     <tbody>
                         <?php foreach (getRecentTransactions() as $transaction): ?>
                             <tr>
-                                <td><?= htmlspecialchars($transaction['transacao_id']) ?></td>          <!--DATA-->
-                                <td><?= htmlspecialchars($transaction['transacao_descricao']) ?></td>   <!--DESCRICAO-->
-                                <td><?= htmlspecialchars($transaction['categoria_descricao']) ?></td>   <!--CATEGORIA-->
+                                <td><?= htmlspecialchars($transaction['transacao_id']) ?></td> <!--DATA-->
+                                <td><?= htmlspecialchars($transaction['transacao_descricao']) ?></td> <!--DESCRICAO-->
+                                <td><?= htmlspecialchars($transaction['categoria_descricao']) ?></td> <!--CATEGORIA-->
                                 <td>
                                     <span class="transaction-type <?= $transaction['transacao_tipo_id'] == 1 ? 'transaction-revenue' : 'transaction-expense' ?>">
                                         <?= $transaction['transacao_tipo_id'] == 1 ? 'Entrada' : 'Saída' ?>
@@ -550,8 +557,8 @@ function getBalanceEvolution()
             });
 
             const balanceData = <?= json_encode(getBalanceEvolution()) ?>;
-            const ids = balanceData.map(item => item.transacao_id); 
-            const saldo = balanceData.map(item => parseFloat(item.saldo_acumulado)); 
+            const ids = balanceData.map(item => item.transacao_id);
+            const saldo = balanceData.map(item => parseFloat(item.saldo_acumulado));
             const ctx2 = document.getElementById('balanceLineChart').getContext('2d');
 
             new Chart(ctx2, {
