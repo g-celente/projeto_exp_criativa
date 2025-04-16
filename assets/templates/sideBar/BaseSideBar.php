@@ -6,7 +6,7 @@
 
     <ul class="nav-menu">
         <li class="nav-item active">
-            <a href="../home/HomeView.php"><i class="fas fa-chart-line"></i>Dashboard</a>
+            <a href="../dashboard/Dashboard.php"><i class="fas fa-chart-line"></i>Dashboard</a>
         </li>
         <li class="nav-item">
             <a href="../entries/EntriesView.php"><i class="fas fa-exchange-alt"></i>Entradas</a>
@@ -17,12 +17,12 @@
         <li class="nav-item">
             <a href="../bank-accounts/BankAccountsView.php"><i class="fa-solid fa-building-columns"></i>Contas Bancárias</a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a href="../cards/CardsView.php"><i class="fas fa-wallet"></i>Cartões</a>
         </li>
         <li class="nav-item">
             <a href=""><i class="fas fa-credit-card"></i>Credits</a>
-        </li>
+        </li> -->
     </ul>
 
     <div class="logout">

@@ -514,24 +514,7 @@
                 }
             };
             
-            
-            // Função para verificar cartões próximos ao avatar
-            // function checkCardsNearAvatar() {
-            //     const avatarRect = avatarContainer.getBoundingClientRect();
-            //     const avatarLeft = avatarRect.left;
-                
-            //     cards.forEach(card => {
-            //         const cardRect = card.getBoundingClientRect();
-            //         const cardRight = cardRect.right;
-                    
-            //         // Se o cartão estiver a menos de 100px do avatar, aplica o efeito
-            //         if (cardRight > avatarLeft - 50 && cardRight < avatarLeft + 3000) {
-            //             card.classList.add('near-avatar');
-            //         } else {
-            //             card.classList.remove('near-avatar');
-            //         }
-            //     });
-            // }
+  
             function checkCardsNearAvatar() {
     const avatarRect = avatarContainer.getBoundingClientRect();
     const avatarLeft = avatarRect.left;
@@ -547,10 +530,10 @@
 
         // Define o limite para começar a reduzir a opacidade
         const maxDistance = 200; // Ajuste conforme necessário
-        const opacity = Math.max(0, 1 - distance / maxDistance); // Opacidade mínima de 0.3
+        // const opacity = Math.max(0, 1 - distance / maxDistance); // Opacidade mínima de 0.3
 
-        // Aplica a opacidade ao cartão
-        card.style.opacity = opacity;
+        // // Aplica a opacidade ao cartão
+        // card.style.opacity = opacity;
     });
 }
             
