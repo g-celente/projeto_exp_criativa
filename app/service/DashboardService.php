@@ -1,5 +1,4 @@
 <?php
-// File: services/DashboardService.php
 include_once __DIR__ . '/../model/Dashboard.php';
 session_start();
 
