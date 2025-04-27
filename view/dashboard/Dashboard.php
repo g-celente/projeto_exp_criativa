@@ -28,15 +28,14 @@ $categoriesList = listCategories();
     <?php include("../../assets/templates/sideBar/BaseSideBar.php"); ?>
     <div class="container">
         <div class="main-content">
-            <header>
+            <!-- <header>
                 <h1 style="font-family: 'Inter', sans-serif; font-weight:bold;">Relatórios Financeiros</h1>
-            </header>
+            </header> -->
 
             <!--FILTRO DE MES-->
-            <section class="filter-section">
+            <!-- <section class="filter-section">
                 <div class="period-selector">
                     <div class="select-period-container" style="flex-grow: 1;">
-                        <!-- TEMPORARIO -->
                         <select>
                             <option>Historico geral</option>
                             <option>Abril 2025</option>
@@ -48,7 +47,7 @@ $categoriesList = listCategories();
                     <button class="filter-button">Aplicar</button>
                 </div>
 
-            </section>
+            </section> -->
 
             <!-- RESUMO/DADOS DA CONTA -->
             <section class="stats-grid">
@@ -123,36 +122,39 @@ $categoriesList = listCategories();
             <!-- HISTORICO -->
             <div class="filter-panel">
                 <div class="filter-select-container">
-                    <div class="select-container">
-                        <select>
-                            <option>Todas</option>
-                            <option>Entradas</option>
-                            <option>Saidas</option>
+                    <div class="select-container mr-1">
+                        <select id="tipoFiltro">
+                            <option value="">Todos</option>
+                            <option value="Entrada">Entradas</option>
+                            <option value="Saída">Saídas</option>
                         </select>
                     </div>
-                    <div class="select-container">
-                        <select>
-                            <option>Selecione uma opcao...</option>
+
+                    <div class="select-container mr-1">
+                        <select id="categoriaFiltro">
+                            <option value="">Todas</option>
                             <?php
                             foreach ($categoriesList as $category) {
-                                echo "<option value='" . htmlspecialchars($category['categoria_id']) . "'>" . htmlspecialchars($category['categoria_descricao']) . "</option>";
+                                echo "<option value='" . htmlspecialchars($category['categoria_descricao']) . "'>" . htmlspecialchars($category['categoria_descricao']) . "</option>";
                             }
                             ?>
                         </select>
                     </div>
-                    <div class="select-container">
-                        <input type="number" placeholder="Valor mínimo">
+
+                    <div class="select-container mr-1">
+                        <input id="valorMinFiltro" type="number" step="0.01" placeholder="Valor mínimo">
                     </div>
-                    <div class="select-container">
-                        <input type="number" placeholder="Valor máximo">
+
+                    <div class="select-container mr-1">
+                        <input id="valorMaxFiltro" type="number" step="0.01" placeholder="Valor máximo">
                     </div>
-                </div>
-                <div class="search-container" style="flex-grow: 1;">
-                    <div class="select-container">
-                        <input id="search-input" type="text" placeholder="buscar..." style="width: 100%;">
+
+                    <div class="select-container mr-1">
+                        <button id="aplicarFiltros" class="btn btn-primary">Filtrar</button>
                     </div>
                 </div>
             </div>
+
 
             <section class="table-container">
                 <h3 class="chart-title">Ultimas transacoes</h3>
@@ -257,22 +259,41 @@ $categoriesList = listCategories();
             //         });
             //     });
             // });
-            document.addEventListener('DOMContentLoaded', function() {
-                const searchInput = document.getElementById('search-input'); // Seleciona pelo ID
-                const tableRows = document.querySelectorAll('.table tbody tr'); // Seleciona as linhas da tabela
+        });
 
-                if (!searchInput || tableRows.length === 0) {
-                    console.log('Campo de busca ou linhas da tabela não encontrados.');
-                    return;
-                }
+        document.addEventListener('DOMContentLoaded', function() {
+            const tipoFiltro = document.getElementById('tipoFiltro');
+            const categoriaFiltro = document.getElementById('categoriaFiltro');
+            const valorMinFiltro = document.getElementById('valorMinFiltro');
+            const valorMaxFiltro = document.getElementById('valorMaxFiltro');
+            const aplicarFiltros = document.getElementById('aplicarFiltros');
+            const tableRows = document.querySelectorAll('table tbody tr');
 
-                searchInput.addEventListener('input', function() {
-                    const searchTerm = this.value.toLowerCase();
+            aplicarFiltros.addEventListener('click', function() {
+                const tipoSelecionado = tipoFiltro.value;
+                const categoriaSelecionada = categoriaFiltro.value;
+                const valorMin = parseFloat(valorMinFiltro.value) || 0;
+                const valorMax = parseFloat(valorMaxFiltro.value) || Infinity;
 
-                    tableRows.forEach(row => {
-                        const rowText = row.textContent.toLowerCase();
-                        row.style.display = rowText.includes(searchTerm) ? '' : 'none';
-                    });
+                tableRows.forEach(row => {
+                    const tipo = row.querySelector('td:nth-child(4) span').innerText.trim();
+                    const categoria = row.querySelector('td:nth-child(3)').innerText.trim();
+                    const valorText = row.querySelector('td:nth-child(5)').innerText.trim().replace('R$', '').replace('.', '').replace(',', '.');
+                    const valor = parseFloat(valorText);
+
+                    let mostrar = true;
+
+                    if (tipoSelecionado && tipo !== tipoSelecionado) {
+                        mostrar = false;
+                    }
+                    if (categoriaSelecionada && categoria !== categoriaSelecionada) {
+                        mostrar = false;
+                    }
+                    if (valor < valorMin || valor > valorMax) {
+                        mostrar = false;
+                    }
+
+                    row.style.display = mostrar ? '' : 'none';
                 });
             });
         });
