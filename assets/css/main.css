@@ -106,6 +106,10 @@
 }
 
 /* Margin */
+.m-a {
+  margin: auto;
+}
+
 .m-1 {
   margin: 1rem;
 }

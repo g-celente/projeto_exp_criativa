@@ -26,6 +26,6 @@
     </ul>
 
     <div class="logout">
-        <i class="fas fa-sign-out-alt"></i> Logout
+        <a href="../../app/helpers/LogoutHelper.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
 </div>
