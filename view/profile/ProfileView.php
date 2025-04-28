@@ -69,7 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .profile-container {
             max-width: 1000px;
             margin: 2rem auto;
-            padding: 2rem;
         }
         .profile-section {
             background: white;
@@ -135,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <?php include("../../assets/templates/sideBar/BaseSideBar.php"); ?>
     
-    <div class="container">
+    <div class="main-content">
         <div class="profile-container">
             <!-- Seção de Visualização -->
             <div class="profile-section">
