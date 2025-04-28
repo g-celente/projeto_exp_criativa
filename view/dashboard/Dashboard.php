@@ -1,10 +1,13 @@
-<!-- TODO: MUDAR O CAMPO DE FILTRO E ASSOCIA-LO AO HISTORICO -->
+<!-- IMPLEMENTAR OS FILTROS PARA O HISTORICO DE TRANSACOES -->
 
 <?php
 include("../../app/service/DashboardService.php");
+include('../../app/service/CategoriesService.php');
 include("../../protected.php");
+$categoriesList = listCategories();
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -19,19 +22,20 @@ include("../../protected.php");
     <link rel="stylesheet" href="../../assets/css/main.css">
 </head>
 
+
+
 <body>
     <?php include("../../assets/templates/sideBar/BaseSideBar.php"); ?>
     <div class="container">
         <div class="main-content">
-            <header>
+            <!-- <header>
                 <h1 style="font-family: 'Inter', sans-serif; font-weight:bold;">Relatórios Financeiros</h1>
-            </header>
+            </header> -->
 
             <!--FILTRO DE MES-->
-            <section class="filter-section">
+            <!-- <section class="filter-section">
                 <div class="period-selector">
-                    <div class="select-container">
-                        <!-- TEMPORARIO -->
+                    <div class="select-period-container" style="flex-grow: 1;">
                         <select>
                             <option>Historico geral</option>
                             <option>Abril 2025</option>
@@ -43,9 +47,9 @@ include("../../protected.php");
                     <button class="filter-button">Aplicar</button>
                 </div>
 
-            </section>
+            </section> -->
 
-            <!-- RESUMO DA CONTA -->
+            <!-- RESUMO/DADOS DA CONTA -->
             <section class="stats-grid">
                 <div class="stat-card">
                     <div class="card-info">
@@ -85,14 +89,6 @@ include("../../protected.php");
             <!-- TABELA -->
             <section class="charts-section">
                 <div class="tabs">
-                    <ul class="tab-list" id="tabs">
-                        <li class="tab active" data-tab="overview">Visão Geral</li>
-                        <li class="tab" data-tab="despesas">Despesas</li>
-                        <li class="tab" data-tab="entradas">Entradas</li>
-                    </ul>
-                    <!-- <div>
-                        <h5>Visão geral</h5>
-                    </div> -->
 
                     <div class="tab-content" id="tabContent">
                         <div class="tab-panel" id="overview">
@@ -125,21 +121,41 @@ include("../../protected.php");
 
             <!-- HISTORICO -->
             <div class="filter-panel">
-                <div class="select-container">
-                    <select>
-                        <option>Todas</option>
-                        <option>Entradas</option>
-                        <option>Saidas</option>
-                    </select>
+                <div class="filter-select-container">
+                    <div class="select-container mr-1">
+                        <select id="tipoFiltro">
+                            <option value="">Todos</option>
+                            <option value="Entrada">Entradas</option>
+                            <option value="Saída">Saídas</option>
+                        </select>
+                    </div>
+
+                    <div class="select-container mr-1">
+                        <select id="categoriaFiltro">
+                            <option value="">Todas</option>
+                            <?php
+                            foreach ($categoriesList as $category) {
+                                echo "<option value='" . htmlspecialchars($category['categoria_descricao']) . "'>" . htmlspecialchars($category['categoria_descricao']) . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+
+                    <div class="select-container mr-1">
+                        <input id="valorMinFiltro" type="number" step="0.01" placeholder="Valor mínimo">
+                    </div>
+
+                    <div class="select-container mr-1">
+                        <input id="valorMaxFiltro" type="number" step="0.01" placeholder="Valor máximo">
+                    </div>
+
+                    <div class="select-container mr-1">
+                        <button id="aplicarFiltros" class="btn btn-primary">Filtrar</button>
+                    </div>
                 </div>
-                <div class="select-container">
-                    <input type="number" placeholder="Valor mínimo">
-                </div>
-                <div class="select-container">
-                    <input type="number" placeholder="Valor máximo">
-                </div>
-                <button class="filter-button">Filtrar</button>
             </div>
+
+
             <section class="table-container">
                 <h3 class="chart-title">Ultimas transacoes</h3>
                 <table>
@@ -174,11 +190,12 @@ include("../../protected.php");
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+
+            //GRAFICOS 
             const expensesData = <?= json_encode(getExpensesByCategoryService()) ?>;
             const labels = expensesData.map(item => item.categoria_descricao);
             const data = expensesData.map(item => parseFloat(item.total));
             const ctx = document.getElementById('expensesPieChart').getContext('2d');
-
             new Chart(ctx, {
                 type: 'pie',
                 data: {
@@ -195,7 +212,6 @@ include("../../protected.php");
             const ids = balanceData.map(item => item.transacao_id);
             const saldo = balanceData.map(item => parseFloat(item.saldo_acumulado));
             const ctx2 = document.getElementById('balanceLineChart').getContext('2d');
-
             new Chart(ctx2, {
                 type: 'line',
                 data: {
@@ -226,13 +242,66 @@ include("../../protected.php");
                     }
                 }
             });
+
+
+
+            //MECANISMO DE BUSCA
+            // document.addEventListener('DOMContentLoaded', function() {
+            //     const searchInput = document.querySelector('#search-field input'); // Campo de busca
+            //     const tableRows = document.querySelectorAll('.table tbody tr');
+
+            //     searchInput.addEventListener('input', function() {
+            //         const searchTerm = this.value.toLowerCase(); // Texto digitado no campo de busca
+            //         tableRows.forEach(row => {
+            //             const descricao = row.querySelector('td:nth-child(2)');
+            //             const busca = descricao ? descricao.textContent.toLowerCase() : '';
+            //             row.style.display = busca.includes(searchTerm) ? '' : 'none';
+            //         });
+            //     });
+            // });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const tipoFiltro = document.getElementById('tipoFiltro');
+            const categoriaFiltro = document.getElementById('categoriaFiltro');
+            const valorMinFiltro = document.getElementById('valorMinFiltro');
+            const valorMaxFiltro = document.getElementById('valorMaxFiltro');
+            const aplicarFiltros = document.getElementById('aplicarFiltros');
+            const tableRows = document.querySelectorAll('table tbody tr');
+
+            aplicarFiltros.addEventListener('click', function() {
+                const tipoSelecionado = tipoFiltro.value;
+                const categoriaSelecionada = categoriaFiltro.value;
+                const valorMin = parseFloat(valorMinFiltro.value) || 0;
+                const valorMax = parseFloat(valorMaxFiltro.value) || Infinity;
+
+                tableRows.forEach(row => {
+                    const tipo = row.querySelector('td:nth-child(4) span').innerText.trim();
+                    const categoria = row.querySelector('td:nth-child(3)').innerText.trim();
+                    const valorText = row.querySelector('td:nth-child(5)').innerText.trim().replace('R$', '').replace('.', '').replace(',', '.');
+                    const valor = parseFloat(valorText);
+
+                    let mostrar = true;
+
+                    if (tipoSelecionado && tipo !== tipoSelecionado) {
+                        mostrar = false;
+                    }
+                    if (categoriaSelecionada && categoria !== categoriaSelecionada) {
+                        mostrar = false;
+                    }
+                    if (valor < valorMin || valor > valorMax) {
+                        mostrar = false;
+                    }
+
+                    row.style.display = mostrar ? '' : 'none';
+                });
+            });
         });
     </script>
 </body>
 
-
-
 </html>
+
 
 <style>
     * {
@@ -296,21 +365,7 @@ include("../../protected.php");
         /* border */
     }
 
-    .filter-panel {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        background-color: #ffffff;
-        /* card-bg */
-        padding: 16px;
-        border-radius: 8px;
-        border: 1px solid #e5e7eb;
-        /* border */
-    }
 
-    .select-container {
-        flex-grow: 1;
-    }
 
     select,
     input,
@@ -514,5 +569,32 @@ include("../../protected.php");
     canvas {
         width: 100% !important;
         height: auto !important;
+    }
+
+    /* TRANSACTIONS FILTER */
+    .filter-panel {
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+        justify-content: space-evenly;
+        gap: 8px;
+        background-color: #ffffff;
+        /* card-bg */
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        /* border */
+    }
+
+    .filter-select-container {
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+        /* gap: 8px;  */
+        align-items: center;
+    }
+
+    .select-container {
+        width: 100%;
     }
 </style>

@@ -48,20 +48,29 @@ function deleteUserById($userId) {
     }
 }
 
+function logout() {
+
+    if(isset($_SESSION)) {
+        session_destroy();
+        header("Location: ../../view/auth/LoginView.php");
+    }
+
+}
+
 
 // CRUD Cartoes
-function createCard($user_id, $card_name, $card_number, $expiration_date, $card_type) {
-    return create_card($user_id, $card_name, $card_number, $expiration_date, $card_type);
-}
+// function createCard($user_id, $card_name, $card_number, $expiration_date, $card_type) {
+//     return create_card($user_id, $card_name, $card_number, $expiration_date, $card_type);
+// }
 
-function listCards($user_id) {
-    return list_cards($user_id);
-}
+// function listCards($user_id) {
+//     return list_cards($user_id);
+// }
 
-function updateCard($card_id, $card_name, $card_number, $expiration_date, $card_type) {
-    return update_card($card_id, $card_name, $card_number, $expiration_date, $card_type);
-}
+// function updateCard($card_id, $card_name, $card_number, $expiration_date, $card_type) {
+//     return update_card($card_id, $card_name, $card_number, $expiration_date, $card_type);
+// }
 
-function deleteCard($card_id) {
-    return delete_card($card_id);
-}
+// function deleteCard($card_id) {
+//     return delete_card($card_id);
+// }
