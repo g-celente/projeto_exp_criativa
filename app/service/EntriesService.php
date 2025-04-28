@@ -6,12 +6,12 @@ function listEntries() {
     return getEntriesList();
 }
 
-function createEntry($conta_bancaria_id, $transacao_valor, $transacao_descricao) {
-    return newEntry($conta_bancaria_id, $transacao_valor, $transacao_descricao);
+function createEntry($categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao) {
+    return newEntry($categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao);
 }
 
-function editEntry($transacao_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao) {
-    return editEntryById($transacao_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao);
+function editEntry($transacao_id, $categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao) {
+    return editEntryById($transacao_id, $categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao);
 }
 
 function deleteEntry($transacao_id) {
