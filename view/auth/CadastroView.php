@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="alert-danger"><?= htmlspecialchars($error) ?></div>
                 <?php elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error): ?>   <!--Verifica o metodo de requisicao e a presenca de outros erros-->
                     <div class="alert-success">
-                        Cadastro realizado com sucesso! <a href="login.php">Clique aqui para fazer login</a> <!--Exibe uma mensagem de sucesso, e um link para a pagina de login-->
+                        Cadastro realizado com sucesso! <a href="LoginView.php">Clique aqui para fazer login</a> <!--Exibe uma mensagem de sucesso, e um link para a pagina de login-->
                     </div>
                 <?php endif; ?>
 

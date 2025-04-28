@@ -54,6 +54,7 @@ function create_user($name, $email, $cpf, $password) {
     return $result ? true : false; // Retorna true se a inserção for bem-sucedida, caso contrário, retorna false.
 }
 
+
 function deleteUser($userId) {
     global $mysqli;
 
