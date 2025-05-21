@@ -120,6 +120,7 @@ if (isset($_POST['email']) || isset($_POST['senha'])) {  // Verifica se o email 
         align-items: center;
         position: relative;
         padding: 20px;
+        min-height: 500px;
     }
 
     .content::before {
@@ -266,7 +267,7 @@ if (isset($_POST['email']) || isset($_POST['senha'])) {  // Verifica se o email 
         height: 45px;
         width: 100%;
         border: none;
-        background-color: #ecf0f1;
+        background-color: #f9f9f9;
     }
 
     input:-webkit-autofill {
@@ -275,10 +276,12 @@ if (isset($_POST['email']) || isset($_POST['senha'])) {  // Verifica se o email 
     }
 
     .label-input {
-        background-color: #ecf0f1;
+        background-color: #f9f9f9;
         display: flex;
         align-items: center;
         margin: 8px;
+        border-radius: 10px;
+        width: 100%;
     }
 
     .icon-modify {

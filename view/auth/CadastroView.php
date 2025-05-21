@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <!-- Formulario de registro -->
                 <form class="form" method="POST">
-                    <label class="label-input" for="name">
+                    <label class="label-input" for="name" >
                         <i class="far fa-user icon-modify"></i>
                         <input type="text" name="name" id="name" placeholder="Nome" required>
                     </label>
@@ -132,6 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         align-items: center;
         position: relative;
         padding: 20px;
+        min-height: 500px;
     }
 
     .content::before {
@@ -274,7 +275,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         height: 45px;
         width: 100%;
         border: none;
-        background-color: #ecf0f1;
+        background-color: #f9f9f9;
     }
 
     input:-webkit-autofill {
@@ -283,10 +284,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     .label-input {
-        background-color: #ecf0f1;
+        background-color: #f9f9f9;
         display: flex;
         align-items: center;
         margin: 8px;
+        border-radius: 10px;
+        width: 100%;
     }
 
     .icon-modify {
