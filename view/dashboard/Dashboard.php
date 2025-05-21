@@ -26,7 +26,9 @@ $categoriesList = listCategories();
 
 <body>
     <?php include("../../assets/templates/sideBar/BaseSideBar.php"); ?>
+    
     <div class="container">
+        <?php include("../../assets/templates/navBar/navBar.php"); ?>
         <div class="main-content">
             <!-- <header>
                 <h1 style="font-family: 'Inter', sans-serif; font-weight:bold;">Relatórios Financeiros</h1>
@@ -320,7 +322,6 @@ $categoriesList = listCategories();
     }
 
     .container {
-        display: flex;
         min-height: 100vh;
         max-width: 95%;
         margin: auto;

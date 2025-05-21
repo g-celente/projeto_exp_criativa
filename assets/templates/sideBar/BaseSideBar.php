@@ -20,7 +20,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="../expenses/ExpensesView.php"><i class="fas fa-history"></i>Saídas</a>
         </li>
         <li class="nav-item <?php echo ($current_page == 'BankAccountsView.php') ? 'active' : ''; ?>">
-            <a href="../bank-accounts/BankAccountsView.php"><i class="fa-solid fa-building-columns"></i>Contas Bancárias</a>
+            <a href="../bank-accounts/BankAccountsView.php"><i class="fa-solid fa-building-columns"></i>Conta Bancária</a>
         </li>
         <li class="nav-item <?php echo ($current_page == 'ProfileView.php') ? 'active' : ''; ?>">
             <a href="../profile/ProfileView.php"><i class="fa-solid fa-user"></i>Perfil</a>

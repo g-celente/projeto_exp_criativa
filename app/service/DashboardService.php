@@ -1,6 +1,6 @@
 <?php
 include_once __DIR__ . '/../model/Dashboard.php';
-session_start();
+
 
 function getTotalRevenueService() {
     $usuario_id = $_SESSION['id'] ?? null;

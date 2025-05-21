@@ -1,79 +1,12 @@
 <?php
+include '../../app/model/BankAccount.php';
 include("../../protected.php");
+include '../../app/model/Entries.php';
+include("../../app/service/DashboardService.php");
 
-include('../../app/service/BankAccountService.php');
-
-
-$bankAccountsList = getBankAccountsList();
-
-//Criar
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
-
-    $nome = $_POST['nome'];
-
-    $result = newBankAccount($nome);
-
-    if ($result) {
-        header("Location: " . $_SERVER['REQUEST_URI']);
-        exit;
-    } else {
-        echo "<script>alert('Erro ao criar entrada.');</script>";
-    }
-}
-
-
-//deletar
-if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
-    $account_id = (int)$_GET['id'];
-    var_dump($account_id);
-    $result = deleteBankAccount($account_id); 
-
-    if ($result) {
-        $base_url = strtok($_SERVER['REQUEST_URI'], '?'); 
-        header("Location: " . $base_url);
-        exit;
-    } else {
-        echo "<script>alert('Erro ao deletar entrada.');</script>";
-    }
-}
-
-//editar
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_submit'])) {
-    $account_id = (int)$_POST['account_id'];
-    $nome = $_POST['edit_nome'];
-  
-    $result = editBankAccount($account_id, $nome);
-
-    if ($result) {
-        header("Location: " . $_SERVER['REQUEST_URI']);
-        exit;
-    } else {
-        echo "<script>alert('Erro ao editar entrada.');</script>";
-    }
-}
+$transactions = getTransactionsList();
+$entries = getEntriesList();
 ?>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.querySelector('.search-input');
-    const tableRows = document.querySelectorAll('.table tbody tr');
-    
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        
-        tableRows.forEach(row => {
-            const rowText = row.textContent.toLowerCase();
-            row.style.display = rowText.includes(searchTerm) ? '' : 'none';
-        });
-    });
-});
-
-const handleOpenEditModal = (account) => {
-    document.getElementById('edit_account_id').value = account.id;
-    document.getElementById('edit_nome').value = account.nome;
-}
-
-</script>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -81,188 +14,644 @@ const handleOpenEditModal = (account) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel</title>
-    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>MoneyTrack</title>
     <link rel="stylesheet" href="../../assets/css/main.css">
 </head>
 
 <body>
-
-    <?php include("../../assets/templates/sideBar/BaseSideBar.php")?>
-
+    <?php include "../../assets/templates/sideBar/BaseSideBar.php"; ?>
+    <!-- Main Content -->
     <div class="main-content">
-        <h1>Contas Bancárias</h1>
-       
-        <p>Visualize e gerencie suas contas bancárias</p>
-        
-        <div class="flex align-center justify-between">
-            <input type="text" placeholder="Buscar..." class="search-input" >
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarModal">Adicionar Conta</button>
+        <h1>Minha Conta</h1>
+        <!-- Área de Cartões no Topo -->
 
-        </div>
-
-        <div class="data-table mt-5">
-            <?php
-       
-
-            echo "<table class='table'>";
-            echo "<thead>";
-            echo "<tr>";
-            echo "<th>ID</th>";
-            echo "<th>Nome</th>";
-            echo "<th>Ações</th>";
-            echo "</tr>";
-            echo "</thead>";
-            echo "<tbody>";
-            foreach($bankAccountsList as $account) {
-              
-                echo "<tr>";
-                echo "<td>" . (!empty($account['id']) ? htmlspecialchars($account['id']) : '-') . "</td>";
-                echo "<td>" . (!empty($account['nome']) ? htmlspecialchars($account['nome']) : '-') . "</td>";
-                echo "<td>
-                        <a class='btn btn-danger btn-sm' id='delete-btn' href='./BankAccountsView.php?action=delete&id=". htmlspecialchars($account['id']) . "'>Deletar</a>
-                        <button class='btn btn-primary btn-sm' id='edit-btn' data-bs-toggle='modal' data-bs-target='#editarModal' onClick='handleOpenEditModal(". json_encode($account) . ")'>Editar</button>
-                    </td>";
-                echo "</tr>";
-            }
-            echo "</tbody>";
-            echo "</table>";
-            ?>
-        </div>
-
-
-    </div>
-
-    <!-- MODAL PARA ADICIONAR -->
-        
-    <div class="modal fade" id="adicionarModal" tabindex="-1" role="dialog" aria-labelledby="adicionarModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="adicionarModalLabel">Adicionar Conta Bancária</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form method="post">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="nome" class="form-label mb-1">Nome:</label>
-                        <input type="text" class="form-control" id="nome" name="nome" required>
+        <div class="grid-two-column">
+            <!-- Card da Conta Bancária -->
+            <div class="account-card">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-type">Conta Bancária</span>
+                        <span class="card-logo">Banco XYZ</span>
+                    </div>
+                    <div class="card-balance">Saldo: R$ <?= number_format(getTotalBalanceService(), 2, ',', '.') ?></div>
+                    <div class="card-number">•••• •••• •••• 1234</div>
+                    <div class="card-footer">
+                        <span>Atualizado</span>
+                        <span>Gabriel Moribe</span>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="submit" class="btn btn-primary">Adicionar</button>
-                </div>
-            </form>
 
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-type">Entradas</span>
+                        <span class="card-logo">VISA</span>
+                    </div>
+                    <div class="card-balance">R$ <?= number_format(getTotalRevenueService(), 2, ',', '.') ?></div>
+                    <div class="card-number">•••• •••• •••• 4562</div>
+                    <div class="card-footer">
+                        <span>08/25</span>
+                        <span>Gabriel Moribe</span>
+                    </div>
+                </div>
+
+                <!-- Cartão 2 -->
+                <div class="card" style="background: linear-gradient(135deg, #10b981, #34d399);">
+                    <div class="card-header">
+                        <span class="card-type">Saídas</span>
+                        <span class="card-logo">VISA</span>
+                    </div>
+                    <div class="card-balance">R$ <?= number_format(getTotalExpensesService(), 2, ',', '.') ?></div>
+                    <div class="card-number">•••• •••• •••• 4562</div>
+                    <div class="card-footer">
+                        <span>05/26</span>
+                        <span>Gabriel Moribe</span>
+                    </div>
+                </div>
             </div>
+
+            <!-- Histórico de Transações -->
+            <div class="history-section" style="padding: 20px; background: #fff; border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2 style="font-size: 20px; font-weight: 600;">Transações Recentes</h2>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="color: #3498db; font-size: 14px;">
+                            <i class="fas fa-clock"></i> Filtrado Por: <strong>&nbsp;Recentes</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="transaction-cards" style="display: flex; flex-direction: column; gap: 16px;">
+                    <?php if ($entries): ?>
+                        <?php foreach ($entries as $tx): ?>
+                            <?php
+                            $valor = number_format($tx['transacao_valor'], 2, ',', '.');
+                            $descricao = htmlspecialchars($tx['transacao_descricao']);
+                            $categoria = htmlspecialchars($tx['categoria_descricao']);
+                            $conta = htmlspecialchars($tx['conta_bancaria_nome']);
+                            $tipo = $tx['transacao_tipo_id'] == 1 ? 'Transferência' : 'QR Code';
+                            $data = "Hoje"; // Substitua com data real se quiser
+                            $tempo = "2m atrás"; // Substitua com cálculo de tempo real
+
+                            $status = 'Done';
+                            $statusColor = $status == 'Done' ? '#22c55e' : '#fbbf24';
+                            $statusIcon = $status == 'Done' ? 'fas fa-check-circle' : 'fas fa-clock';
+                            ?>
+                            <div class="transaction-card">
+                                <div class="col descricao">
+                                    <div><?= $descricao ?></div>
+                                    <div><?= $categoria ?></div>
+                                </div>
+                                <div class="col data">
+                                    <div><?= $data ?></div>
+                                    <div><?= $tempo ?></div>
+                                </div>
+                                <div class="col valor">
+                                    <div>R$ <?= $valor ?></div>
+                                    <div><?= $tipo ?></div>
+                                </div>
+                                <div class="col status">
+                                    <i class="<?= $statusIcon ?>"></i> <?= $status ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p style="padding: 12px; color: #999;">Nenhuma transação encontrada.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+
         </div>
-    </div>
-        
-       
-       <!-- MODAL PARA EDITAR -->
-    <div class="modal fade" id="editarModal" tabindex="-1" role="dialog" aria-labelledby="editarModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editarModalLabel">Editar Conta Bancária</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+
+
+        <!-- Stats Cards
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">Business</div>
+                <div class="stat-value">$ 1260.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Income</div>
+                <div class="stat-value">$ 1240.60</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Outcome</div>
+                <div class="stat-value">$ 240.35</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Savings</div>
+                <div class="stat-value">$ 550.00</div>
+            </div>
+        </div> -->
+
+        <!-- Card History -->
+        <div class="history-section">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 class="section-title">Histórico de Transações</h2>
+                <a href="gerar_extrato.php" class="button" style="padding: 8px 16px; font-size: 14px;">Gerar Extrato</a>
+            </div>
+
+            <ul class="transaction-list" id="transactionList">
+                <?php if ($transactions): ?>
+                    <?php foreach ($transactions as $index => $tx): ?>
+                        <?php
+                        $valor = number_format($tx['transacao_valor'], 2, ',', '.');
+                        $icone = ($tx['transacao_tipo_id'] == 1)
+                            ? '<i class="fas fa-arrow-up" style="color: #22c55e;"></i>'
+                            : '<i class="fas fa-arrow-down" style="color: #ef4444;"></i>';
+                        $hiddenClass = $index >= 5 ? 'class="transaction-item extra-transaction" style="display: none;"' : 'class="transaction-item"';
+
+                        ?>
+                        <li class="transaction-item" <?= $hiddenClass ?>>
+                            <div class="transaction-details">
+                                <div class="transaction-merchant">
+                                    <?= $icone ?>
+                                    <?= htmlspecialchars($tx['transacao_descricao']) ?>
+                                </div>
+                                <div class="transaction-time">
+                                    Categoria: <?= htmlspecialchars($tx['categoria_descricao']) ?> |
+                                    Conta: <?= htmlspecialchars($tx['conta_bancaria_nome']) ?>
+                                </div>
+                            </div>
+                            <div class="transaction-amount">
+                                R$ <?= $valor ?>
+                            </div>
+                        </li>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <li class="transaction-item">
+                        <div class="transaction-details">
+                            <div class="transaction-merchant">Nenhuma transação encontrada.</div>
+                        </div>
+                    </li>
+                <?php endif; ?>
+            </ul>
+
+            <?php if (count($transactions) > 5): ?>
+                <div style="text-align: right; margin-top: 10px;">
+                    <button id="toggleTransactions" class="action-button service" style="padding: 6px 12px; font-size: 13px;">
+                        Ver mais <i class="fas fa-chevron-down"></i>
                     </button>
                 </div>
-                <form method="post">
-                    <input type="hidden" name="account_id" id="edit_account_id">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="edit_nome" class="form-label mb-1">Descrição:</label>
-                            <input type="text" class="form-control" id="edit_nome" name="edit_nome" required>
-                        </div>
-                      
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" name="edit_submit" class="btn btn-primary">Salvar Alterações</button>
-                    </div>
-                </form>
-            </div>
+            <?php endif; ?>
         </div>
+
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const toggleBtn = document.getElementById('toggleTransactions');
+        if (toggleBtn) {
+            let expanded = false;
+            toggleBtn.addEventListener('click', () => {
+                document.querySelectorAll('.extra-transaction').forEach(el => {
+                    el.style.display = expanded ? 'none' : 'flex';
+                });
+                toggleBtn.innerHTML = expanded ? 'Ver mais <i class="fas fa-chevron-down"></i>' : 'Ver menos <i class="fas fa-chevron-up"></i>';
+                expanded = !expanded;
+            });
+        }
+    </script>
 </body>
 
 </html>
-
-
-
-
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap');
-    .search-input{
-        width: 400px;
-        padding: 5px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        margin-right: 10px;
+    .grid-two-column {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        align-items: stretch;
+        margin-bottom: 20px;
+        margin-top: 10px;
     }
 
-    .table {
-        background-color: #fff;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        margin-top: 20px;
-        border-collapse: separate;
-        border-spacing: 0;
+    .account-card {
+        width: 100%;
     }
-    
-    .table thead th {
-        background-color:rgb(240, 240, 240);
-    
+
+
+    /* Estilo dos Cartões */
+    .card {
+        background: linear-gradient(135deg, var(--primary-color), #6366f1);
+        color: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 10px;
+        width: 300px;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        height: 180px;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .card-type {
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+    .card-logo {
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .card-balance {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .card-number {
+        font-family: 'Courier New', monospace;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        margin-top: 10px;
+    }
+
+
+    /* Card Stats */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-title {
+        font-size: 14px;
+        color: #64748b;
+        margin-bottom: 10px;
+    }
+
+    .stat-value {
+        font-size: 22px;
         font-weight: 600;
-        padding: 15px;
-        border: none;
-    }
-    
-    .table tbody tr:nth-child(even) {
-        background-color: #f8f9fa;
-    }
-    
-    .table tbody tr:nth-child(odd) {
-        background-color: #ffffff;
-    }
-    
-    .table tbody tr:hover {
-        background-color: #e9f5ff;
-        transition: all 0.2s ease;
-    }
-    
-    .table td {
-        padding: 12px 15px;
-        border-top: 1px solid #f0f0f0;
-        vertical-align: middle;
-    }
-    
-    .table th:first-child {
-        border-radius: 10px 0 0 0;
-    }
-    
-    .table th:last-child {
-        border-radius: 0 10px 0 0;
-    }
-    
-    .table tr:last-child td:first-child {
-        border-radius: 0 0 0 10px;
-    }
-    
-    .table tr:last-child td:last-child {
-        border-radius: 0 0 10px 0;
     }
 
-    .close{
-        background: none;
+    /* Card History */
+    .history-section {
+        background-color: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .transaction-list {
+        list-style: none;
+    }
+
+    .transaction-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 16px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .transaction-item:last-child {
+        border-bottom: none;
+    }
+
+    .transaction-details {
+        flex: 1;
+    }
+
+    .transaction-merchant {
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+
+    .transaction-time {
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    .transaction-amount {
+        font-weight: 600;
+    }
+
+    /* Card Actions */
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .action-button {
+        flex: 1;
+        padding: 12px;
         border: none;
+        border-radius: 8px;
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .action-button:hover {
+        background-color: #2563eb;
+    }
+
+    .action-button.service {
+        background-color: #e2e8f0;
+        color: #334155;
+    }
+
+    /* User Avatar Container */
+    .user-avatar-container {
+        position: absolute;
+        width: 450px;
+        height: 120px;
+        right: 20px;
+        top: 1px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        background-color: transparent;
+        border-bottom-left-radius: 50px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        z-index: 2;
+    }
+
+    .user-avatar-container::before {
+        content: "";
+        position: absolute;
+        width: 50%;
+        height: 100%;
+        background-color: var(--primary-color);
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
+
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-left: auto;
+        margin-bottom: 20px;
+    }
+
+    /* Botões de navegação do carrossel */
+    .carousel-nav {
+        position: absolute;
+        right: 500px;
+        bottom: 0px;
+        display: flex;
+        gap: 10px;
+        z-index: 3;
+    }
+
+
+    /* Efeito de opacidade quando perto do avatar */
+    .card.near-avatar {
+        opacity: 0;
+    }
+
+    .button {
+        border: none;
+        border-radius: 8px;
+        background-color: var(--primary-color);
+        color: white;
+        text-decoration: none;
+    }
+
+    .button:hover {
+        background-color: #2563eb;
+    }
+
+    .btn-gray {
+        padding: 6px 12px;
+        font-size: 13px;
+        border: none;
+        background: #e5e7eb;
+        border-radius: 6px;
+        color: #111827;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-gray:hover {
+        background: #d1d5db;
+    }
+
+    .transaction-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        align-items: center;
+        /* Centraliza horizontalmente */
+    }
+
+    .transaction-card {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        /* Define o layout fixo das colunas */
+        width: 100%;
+        max-width: 800px;
+        gap: 20px;
+        align-items: start;
+        /* Alinha conteúdo no topo */
+        padding: 16px;
+        border-bottom: 1px solid #e2e8f0;
+        border-radius: 8px;
+    }
+
+    .transaction-card .col {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        font-size: 14px;
+    }
+
+    .transaction-card .descricao div:first-child {
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .transaction-card .valor div:first-child {
+        font-weight: bold;
+        font-size: 16px;
+        color: var(--primary-color);
+    }
+
+    .transaction-card .status {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+    }
+
+    .transaction-card .status i {
+        margin-right: 6px;
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const slider = document.getElementById('cardsSlider');
+        const container = document.getElementById('cardsContainer');
+        const cards = document.querySelectorAll('.card');
+        const avatarContainer = document.querySelector('.user-avatar-container');
+
+        let isDragging = false;
+        let startX, startScrollLeft, velocity, lastX, animationFrame;
+        // (posicao inicial do cursor, posicao inicial do carrossel, velocidade, ultima posicao do cursor, frame de animacao)
+        const cardWidth = cards[0].offsetWidth + 20; // Largura do card + gap entre eles
+        let currentPosition = 0;
+        const maxPosition = -(cardWidth * (cards.length - 3)); // Mostra 3 cards por vez
+
+        // Inicia o arraste
+        const startDrag = (e) => {
+            isDragging = true;
+            slider.classList.add('dragging');
+
+            // Posição inicial do cursor
+            startX = e.pageX;
+            lastX = startX;
+
+            // Posição inicial do scroll
+            startScrollLeft = currentPosition;
+
+            // Cancela qualquer animação em andamento
+            // cancelAnimationFrame(animationFrame);
+
+            // Reseta a velocidade
+            velocity = 0;
+        };
+
+        // Durante o arraste
+        const duringDrag = (e) => {
+            if (!isDragging) return;
+            e.preventDefault(); // ???
+
+            // Posição atual do cursor
+            const x = e.pageX;
+
+            // Calcula a velocidade (para efeito de inércia)
+            velocity = x - lastX;
+            lastX = x;
+
+            // Calcula o deslocamento
+            const walk = x - startX;
+
+            // Atualiza a posição
+            currentPosition = startScrollLeft + walk;
+
+            // Limites do carrossel
+            currentPosition = Math.min(0, Math.max(maxPosition, currentPosition));
+
+            // Aplica o movimento
+            slider.style.transform = `translateX(${currentPosition}px)`;
+
+            // Verifica cartões próximos ao avatar
+            checkCardsNearAvatar();
+        };
+
+        // Finaliza o arraste
+        const endDrag = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            slider.classList.remove('dragging');
+
+            // Aplica efeito de inércia
+            applyInertia();
+        };
+
+        // Efeito de inércia
+        const applyInertia = () => {
+            // Reduz a velocidade gradualmente
+            velocity *= 0.92;
+
+            // Atualiza a posição com a velocidade
+            currentPosition += velocity;
+
+            // Limites do carrossel
+            currentPosition = Math.min(0, Math.max(maxPosition, currentPosition));
+
+            // Aplica o movimento
+            slider.style.transform = `translateX(${currentPosition}px)`;
+
+            // Verifica cartões próximos ao avatar
+            checkCardsNearAvatar();
+
+            // Continua a animação se ainda houver velocidade
+            if (Math.abs(velocity) > 0.5) {
+                animationFrame = requestAnimationFrame(applyInertia);
+            } else {
+                // Alinha ao cartão mais próximo quando parar
+                snapToCard();
+            }
+        };
+
+
+        function checkCardsNearAvatar() {
+            const avatarRect = avatarContainer.getBoundingClientRect();
+            const avatarLeft = avatarRect.left;
+            const avatarRight = avatarRect.right;
+
+            cards.forEach(card => {
+                const cardRect = card.getBoundingClientRect();
+                const cardCenter = (cardRect.left + cardRect.right) / 2;
+
+                // Calcula a distância do centro do cartão ao centro do avatar
+                const avatarCenter = (avatarLeft + avatarRight) / 2;
+                const distance = Math.abs(cardCenter - avatarCenter);
+
+                // Define o limite para começar a reduzir a opacidade
+                const maxDistance = 200; // Ajuste conforme necessário
+                // const opacity = Math.max(0, 1 - distance / maxDistance); // Opacidade mínima de 0.3
+
+                // // Aplica a opacidade ao cartão
+                // card.style.opacity = opacity;
+            });
+        }
+
+        // Event listeners para mouse
+        slider.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', duringDrag);
+        document.addEventListener('mouseup', endDrag);
+
+        // Event listeners para touch
+        slider.addEventListener('touchstart', startDrag, {
+            passive: false
+        });
+        slider.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            duringDrag(e);
+        }, {
+            passive: false
+        });
+        slider.addEventListener('touchend', endDrag);
+
+        // Inicializa a posição
+        slider.style.transform = 'translateX(0px)';
+        checkCardsNearAvatar();
+    });
+</script>

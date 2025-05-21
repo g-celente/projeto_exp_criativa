@@ -248,7 +248,6 @@
 body {
   background-color: #f8fafc;
   color: #1e293b;
-  display: flex;
 }
 
 .main-content {
@@ -322,6 +321,7 @@ body {
 }
 
 /* Logout fixado ao fim da sidebar */
+
 .logout {
   margin-top: auto;
   padding-top: 20px;
@@ -331,6 +331,7 @@ body {
   align-items: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-decoration: none;
 }
 
 .logout i {

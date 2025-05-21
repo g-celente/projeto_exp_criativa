@@ -25,6 +25,7 @@ function getEntriesList(){
                 t.transacao_descricao,
                 t.categoria_id,
                 t.conta_bancaria_id,
+                t.transacao_tipo_id,
                 ca.categoria_descricao,
                 c.nome AS conta_bancaria_nome
             FROM transacoes t
