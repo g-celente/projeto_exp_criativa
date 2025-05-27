@@ -4,8 +4,28 @@ include("../../protected.php");
 include '../../app/model/Entries.php';
 include("../../app/service/DashboardService.php");
 
+$userId = $_SESSION['id'];
+$hasAccount = !empty(getUserBankAccounts($userId));
+
 $transactions = getTransactionsList();
 $entries = getEntriesList();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
+
+    $conta_bancaria_id = (int)$_POST['conta_bancaria'];
+    $transacao_valor = (float)str_replace(',', '.', $_POST['valor']);
+    $transacao_descricao = $_POST['descricao'];
+    $categoria_id = (int)$_POST['categoria_id']; // criar categoria
+
+    $result = createEntry($categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao);
+
+    if ($result) {
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit;
+    } else {
+        echo "<script>alert('Erro ao criar entrada.');</script>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -15,6 +35,7 @@ $entries = getEntriesList();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoneyTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/main.css">
 </head>
 
@@ -22,108 +43,170 @@ $entries = getEntriesList();
     <?php include "../../assets/templates/sideBar/BaseSideBar.php"; ?>
     <!-- Main Content -->
     <div class="main-content">
-        <h1>Minha Conta</h1>
-        <!-- Área de Cartões no Topo -->
+        <?php if (!$hasAccount): ?>
+            <div class="flex flex-col align-center justify-center mt-5">
+                <img src="../../assets/img/no-account.png" alt="Sem Conta" style="width: 250px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <h2 class="mt-3">Você ainda não possui uma conta bancária cadastrada.</h2>
+                <button onclick="openModal()" class="button mt-2">Criar Conta Bancária</button>
+            </div>
 
-        <div class="grid-two-column">
-            <!-- Card da Conta Bancária -->
-            <div class="account-card">
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-type">Conta Bancária</span>
-                        <span class="card-logo">Banco XYZ</span>
-                    </div>
-                    <div class="card-balance">Saldo: R$ <?= number_format(getTotalBalanceService(), 2, ',', '.') ?></div>
-                    <div class="card-number">•••• •••• •••• 1234</div>
-                    <div class="card-footer">
-                        <span>Atualizado</span>
-                        <span>Gabriel Moribe</span>
-                    </div>
-                </div>
+            <div class="modal fade" id="adicionarModal" tabindex="-1" role="dialog" aria-labelledby="adicionarModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="adicionarModalLabel">Adicionar Entrada</h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form method="post">
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="descricao" class="form-label mb-1">Descrição:</label>
+                                    <input type="text" class="form-control" id="descricao" name="descricao" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="valor" class="form-label mb-1">Valor:</label>
+                                    <input type="number" class="form-control" id="valor" name="valor" required>
+                                </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-type">Entradas</span>
-                        <span class="card-logo">VISA</span>
-                    </div>
-                    <div class="card-balance">R$ <?= number_format(getTotalRevenueService(), 2, ',', '.') ?></div>
-                    <div class="card-number">•••• •••• •••• 4562</div>
-                    <div class="card-footer">
-                        <span>08/25</span>
-                        <span>Gabriel Moribe</span>
-                    </div>
-                </div>
+                                <div class="mb-3">
+                                    <label for="categoria_id" class="form-label mb-1">Categoria:</label>
+                                    <select class="form-control" id="categoria_id" name="categoria_id" required>
+                                        <option value="#" disabled selected hidden>Selecione uma Categoria...</option>
+                                        <?php
+                                        foreach ($categoriesList as $category) {
+                                            echo "<option value='" . htmlspecialchars($category['categoria_id']) . "'>" . htmlspecialchars($category['categoria_descricao']) . "</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
 
-                <!-- Cartão 2 -->
-                <div class="card" style="background: linear-gradient(135deg, #10b981, #34d399);">
-                    <div class="card-header">
-                        <span class="card-type">Saídas</span>
-                        <span class="card-logo">VISA</span>
-                    </div>
-                    <div class="card-balance">R$ <?= number_format(getTotalExpensesService(), 2, ',', '.') ?></div>
-                    <div class="card-number">•••• •••• •••• 4562</div>
-                    <div class="card-footer">
-                        <span>05/26</span>
-                        <span>Gabriel Moribe</span>
+                                <div class="mb-3">
+                                    <label for="conta_bancaria" class="form-label mb-1">Conta bancaria:</label>
+                                    <select class="form-control" id="conta_bancaria" name="conta_bancaria" required>
+                                        <option value="#" disabled selected hidden>Selecione uma Opção...</option>
+                                        <?php
+                                        foreach ($bankAccountsList as $account) {
+                                            echo "<option value='" . htmlspecialchars($account['id']) . "'>" . htmlspecialchars($account['nome']) . "</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" onclick="closeModal()">Cancelar</button>
+                                <button type="submit" name="submit" class="btn btn-primary">Adicionar</button>
+                            </div>
+                        </form>
+
                     </div>
                 </div>
             </div>
+        <?php else: ?>
+            <h1>Minha Conta</h1>
+            <!-- Área de Cartões no Topo -->
 
-            <!-- Histórico de Transações -->
-            <div class="history-section" style="padding: 20px; background: #fff; border-radius: 8px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h2 style="font-size: 20px; font-weight: 600;">Transações Recentes</h2>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <div style="color: #3498db; font-size: 14px;">
-                            <i class="fas fa-clock"></i> Filtrado Por: <strong>&nbsp;Recentes</strong>
+            <div class="grid-two-column">
+                <!-- Card da Conta Bancária -->
+                <div class="account-card">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-type">Conta Bancária</span>
+                            <span class="card-logo">Banco XYZ</span>
+                        </div>
+                        <div class="card-balance">Saldo: R$ <?= number_format(getTotalBalanceService(), 2, ',', '.') ?></div>
+                        <div class="card-number">•••• •••• •••• 1234</div>
+                        <div class="card-footer">
+                            <span>Atualizado</span>
+                            <span>Gabriel Moribe</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-type">Entradas</span>
+                            <span class="card-logo">VISA</span>
+                        </div>
+                        <div class="card-balance">R$ <?= number_format(getTotalRevenueService(), 2, ',', '.') ?></div>
+                        <div class="card-number">•••• •••• •••• 4562</div>
+                        <div class="card-footer">
+                            <span>08/25</span>
+                            <span>Gabriel Moribe</span>
+                        </div>
+                    </div>
+
+                    <!-- Cartão 2 -->
+                    <div class="card" style="background: linear-gradient(135deg, #10b981, #34d399);">
+                        <div class="card-header">
+                            <span class="card-type">Saídas</span>
+                            <span class="card-logo">VISA</span>
+                        </div>
+                        <div class="card-balance">R$ <?= number_format(getTotalExpensesService(), 2, ',', '.') ?></div>
+                        <div class="card-number">•••• •••• •••• 4562</div>
+                        <div class="card-footer">
+                            <span>05/26</span>
+                            <span>Gabriel Moribe</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="transaction-cards" style="display: flex; flex-direction: column; gap: 16px;">
-                    <?php if ($entries): ?>
-                        <?php foreach ($entries as $tx): ?>
-                            <?php
-                            $valor = number_format($tx['transacao_valor'], 2, ',', '.');
-                            $descricao = htmlspecialchars($tx['transacao_descricao']);
-                            $categoria = htmlspecialchars($tx['categoria_descricao']);
-                            $conta = htmlspecialchars($tx['conta_bancaria_nome']);
-                            $tipo = $tx['transacao_tipo_id'] == 1 ? 'Transferência' : 'QR Code';
-                            $data = "Hoje"; // Substitua com data real se quiser
-                            $tempo = "2m atrás"; // Substitua com cálculo de tempo real
-
-                            $status = 'Done';
-                            $statusColor = $status == 'Done' ? '#22c55e' : '#fbbf24';
-                            $statusIcon = $status == 'Done' ? 'fas fa-check-circle' : 'fas fa-clock';
-                            ?>
-                            <div class="transaction-card">
-                                <div class="col descricao">
-                                    <div><?= $descricao ?></div>
-                                    <div><?= $categoria ?></div>
-                                </div>
-                                <div class="col data">
-                                    <div><?= $data ?></div>
-                                    <div><?= $tempo ?></div>
-                                </div>
-                                <div class="col valor">
-                                    <div>R$ <?= $valor ?></div>
-                                    <div><?= $tipo ?></div>
-                                </div>
-                                <div class="col status">
-                                    <i class="<?= $statusIcon ?>"></i> <?= $status ?>
-                                </div>
+                <!-- Histórico de Transações -->
+                <div class="history-section" style="padding: 20px; background: #fff; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h2 style="font-size: 20px; font-weight: 600;">Transações Recentes</h2>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="color: #3498db; font-size: 14px;">
+                                <i class="fas fa-clock"></i> Filtrado Por: <strong>&nbsp;Recentes</strong>
                             </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <p style="padding: 12px; color: #999;">Nenhuma transação encontrada.</p>
-                    <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="transaction-cards" style="display: flex; flex-direction: column; gap: 16px;">
+                        <?php if ($entries): ?>
+                            <?php foreach ($entries as $tx): ?>
+                                <?php
+                                $valor = number_format($tx['transacao_valor'], 2, ',', '.');
+                                $descricao = htmlspecialchars($tx['transacao_descricao']);
+                                $categoria = htmlspecialchars($tx['categoria_descricao']);
+                                $conta = htmlspecialchars($tx['conta_bancaria_nome']);
+                                $tipo = $tx['transacao_tipo_id'] == 1 ? 'Transferência' : 'QR Code';
+                                $data = "Hoje"; // Substitua com data real se quiser
+                                $tempo = "2m atrás"; // Substitua com cálculo de tempo real
+
+                                $status = 'Done';
+                                $statusColor = $status == 'Done' ? '#22c55e' : '#fbbf24';
+                                $statusIcon = $status == 'Done' ? 'fas fa-check-circle' : 'fas fa-clock';
+                                ?>
+                                <div class="transaction-card">
+                                    <div class="col descricao">
+                                        <div><?= $descricao ?></div>
+                                        <div><?= $categoria ?></div>
+                                    </div>
+                                    <div class="col data">
+                                        <div><?= $data ?></div>
+                                        <div><?= $tempo ?></div>
+                                    </div>
+                                    <div class="col valor">
+                                        <div>R$ <?= $valor ?></div>
+                                        <div><?= $tipo ?></div>
+                                    </div>
+                                    <div class="col status">
+                                        <i class="<?= $statusIcon ?>"></i> <?= $status ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p style="padding: 12px; color: #999;">Nenhuma transação encontrada.</p>
+                        <?php endif; ?>
+                    </div>
                 </div>
+
             </div>
 
-        </div>
 
-
-        <!-- Stats Cards
+            <!-- Stats Cards
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-title">Business</div>
@@ -143,58 +226,58 @@ $entries = getEntriesList();
             </div>
         </div> -->
 
-        <!-- Card History -->
-        <div class="history-section">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2 class="section-title">Histórico de Transações</h2>
-                <a href="gerar_extrato.php" class="button" style="padding: 8px 16px; font-size: 14px;">Gerar Extrato</a>
-            </div>
+            <!-- Card History -->
+            <div class="history-section">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 class="section-title">Histórico de Transações</h2>
+                    <a href="gerar_extrato.php" class="button" style="padding: 8px 16px; font-size: 14px;">Gerar Extrato</a>
+                </div>
 
-            <ul class="transaction-list" id="transactionList">
-                <?php if ($transactions): ?>
-                    <?php foreach ($transactions as $index => $tx): ?>
-                        <?php
-                        $valor = number_format($tx['transacao_valor'], 2, ',', '.');
-                        $icone = ($tx['transacao_tipo_id'] == 1)
-                            ? '<i class="fas fa-arrow-up" style="color: #22c55e;"></i>'
-                            : '<i class="fas fa-arrow-down" style="color: #ef4444;"></i>';
-                        $hiddenClass = $index >= 5 ? 'class="transaction-item extra-transaction" style="display: none;"' : 'class="transaction-item"';
+                <ul class="transaction-list" id="transactionList">
+                    <?php if ($transactions): ?>
+                        <?php foreach ($transactions as $index => $tx): ?>
+                            <?php
+                            $valor = number_format($tx['transacao_valor'], 2, ',', '.');
+                            $icone = ($tx['transacao_tipo_id'] == 1)
+                                ? '<i class="fas fa-arrow-up" style="color: #22c55e;"></i>'
+                                : '<i class="fas fa-arrow-down" style="color: #ef4444;"></i>';
+                            $hiddenClass = $index >= 5 ? 'class="transaction-item extra-transaction" style="display: none;"' : 'class="transaction-item"';
 
-                        ?>
-                        <li class="transaction-item" <?= $hiddenClass ?>>
+                            ?>
+                            <li class="transaction-item" <?= $hiddenClass ?>>
+                                <div class="transaction-details">
+                                    <div class="transaction-merchant">
+                                        <?= $icone ?>
+                                        <?= htmlspecialchars($tx['transacao_descricao']) ?>
+                                    </div>
+                                    <div class="transaction-time">
+                                        Categoria: <?= htmlspecialchars($tx['categoria_descricao']) ?> |
+                                        Conta: <?= htmlspecialchars($tx['conta_bancaria_nome']) ?>
+                                    </div>
+                                </div>
+                                <div class="transaction-amount">
+                                    R$ <?= $valor ?>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li class="transaction-item">
                             <div class="transaction-details">
-                                <div class="transaction-merchant">
-                                    <?= $icone ?>
-                                    <?= htmlspecialchars($tx['transacao_descricao']) ?>
-                                </div>
-                                <div class="transaction-time">
-                                    Categoria: <?= htmlspecialchars($tx['categoria_descricao']) ?> |
-                                    Conta: <?= htmlspecialchars($tx['conta_bancaria_nome']) ?>
-                                </div>
-                            </div>
-                            <div class="transaction-amount">
-                                R$ <?= $valor ?>
+                                <div class="transaction-merchant">Nenhuma transação encontrada.</div>
                             </div>
                         </li>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <li class="transaction-item">
-                        <div class="transaction-details">
-                            <div class="transaction-merchant">Nenhuma transação encontrada.</div>
-                        </div>
-                    </li>
+                    <?php endif; ?>
+                </ul>
+
+                <?php if (count($transactions) > 5): ?>
+                    <div style="text-align: right; margin-top: 10px;">
+                        <button id="toggleTransactions" class="action-button service" style="padding: 6px 12px; font-size: 13px;">
+                            Ver mais <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
                 <?php endif; ?>
-            </ul>
-
-            <?php if (count($transactions) > 5): ?>
-                <div style="text-align: right; margin-top: 10px;">
-                    <button id="toggleTransactions" class="action-button service" style="padding: 6px 12px; font-size: 13px;">
-                        Ver mais <i class="fas fa-chevron-down"></i>
-                    </button>
-                </div>
-            <?php endif; ?>
-        </div>
-
+            </div>
+        <?php endif; ?>
     </div>
 
     <script>
@@ -209,11 +292,68 @@ $entries = getEntriesList();
                 expanded = !expanded;
             });
         }
+
+        function openModal() {
+            document.getElementById('adicionarModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('adicionarModal').classList.remove('show');
+        }
     </script>
 </body>
 
 </html>
 <style>
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        width: 320px;
+        transform: scale(0.95);
+        animation: popIn 0.3s ease-in-out forwards;
+    }
+
+    .modal.show {
+        display: flex;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes popIn {
+        from {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
     .grid-two-column {
         display: grid;
         grid-template-columns: 1fr 2fr;

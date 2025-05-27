@@ -11,6 +11,16 @@ tabela de conta_bancaria
 
 */
 
+function getUserBankAccounts($userId) {
+    $conn = create_connection();
+
+    $query = "SELECT id, nome, usuario_id FROM conta_bancaria WHERE usuario_id = '$userId'";
+
+    $result = pg_query($conn, $query);
+
+    return $result ? pg_fetch_all($result) : false;
+}
+
 function getTransactionsList(){
     $conn = create_connection();
     $usuario_id = $_SESSION['id'];
