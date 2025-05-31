@@ -6,8 +6,8 @@ function listBankAccounts() {
     return getBankAccountsList();
 }
 
-function newBankAccount($nome) {
-    return createBankAccount($nome);
+function newBankAccount($nome, $agencia, $conta) {
+    return createBankAccount($nome, $agencia, $conta);
 }
 
 function editBankAccount($id, $nome) {

@@ -56,12 +56,14 @@ function getBankAccountsList(){
     return $result ? pg_fetch_all($result) : false;
 }
 
-function createBankAccount($nome){
+function createBankAccount($nome, $agencia, $conta){
     $conn = create_connection();
     $nome = pg_escape_string($conn, $nome);
+    $agencia = pg_escape_string($conn, $agencia);
+    $conta = pg_escape_string($conn, $conta);
     $usuario_id = $_SESSION['id'];
 
-    $query = "INSERT INTO conta_bancaria (nome, usuario_id) values ('$nome', $usuario_id)";
+    $query = "INSERT INTO conta_bancaria (nome, usuario_id, agencia, conta) values ('$nome', $usuario_id, $agencia, $conta)";
 
     $result = pg_query($conn, $query);
 

@@ -12,12 +12,11 @@ $entries = getEntriesList();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 
-    $conta_bancaria_id = (int)$_POST['conta_bancaria'];
-    $transacao_valor = (float)str_replace(',', '.', $_POST['valor']);
-    $transacao_descricao = $_POST['descricao'];
-    $categoria_id = (int)$_POST['categoria_id']; // criar categoria
+    $conta_bancaria = $_POST['name'];
+    $agencia = (int)$_POST['agencia'];
+    $conta = (int)$_POST['conta'];
 
-    $result = createEntry($categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao);
+    $result = newBankAccount($conta_bancaria, $agencia, $conta);
 
     if ($result) {
         header("Location: " . $_SERVER['REQUEST_URI']);
@@ -37,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     <title>MoneyTrack</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/main.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js"></script>
 </head>
 
 <body>
@@ -44,53 +44,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     <!-- Main Content -->
     <div class="main-content">
         <?php if (!$hasAccount): ?>
-            <div class="flex flex-col align-center justify-center mt-5">
-                <img src="../../assets/img/no-account.png" alt="Sem Conta" style="width: 250px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                <h2 class="mt-3">Você ainda não possui uma conta bancária cadastrada.</h2>
-                <button onclick="openModal()" class="button mt-2">Criar Conta Bancária</button>
+            <div class="error-container">
+                <div class="lottie-animation"></div>
+                <div class="error-content">
+                    <h1>Ops</h1>
+                    <p>Você ainda não possui uma conta bancária cadastrada.</p>
+                    <button onclick="openModal()" class="btn btn-primary">Criar Conta Bancária</button>
+                </div>
             </div>
 
             <div class="modal fade" id="adicionarModal" tabindex="-1" role="dialog" aria-labelledby="adicionarModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="adicionarModalLabel">Adicionar Entrada</h5>
-                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <h5 class="modal-title" id="adicionarModalLabel">Adicionar Conta</h5>
+                            <button type="button" class="close" onclick="closeModal()" data-bs-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <form method="post">
                             <div class="modal-body">
                                 <div class="mb-3">
-                                    <label for="descricao" class="form-label mb-1">Descrição:</label>
-                                    <input type="text" class="form-control" id="descricao" name="descricao" required>
+                                    <label for="Nome" class="form-label mb-1">Nome:</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="valor" class="form-label mb-1">Valor:</label>
-                                    <input type="number" class="form-control" id="valor" name="valor" required>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="categoria_id" class="form-label mb-1">Categoria:</label>
-                                    <select class="form-control" id="categoria_id" name="categoria_id" required>
-                                        <option value="#" disabled selected hidden>Selecione uma Categoria...</option>
-                                        <?php
-                                        foreach ($categoriesList as $category) {
-                                            echo "<option value='" . htmlspecialchars($category['categoria_id']) . "'>" . htmlspecialchars($category['categoria_descricao']) . "</option>";
-                                        }
-                                        ?>
-                                    </select>
+                                    <label for="Agencia" class="form-label mb-1">Agência:</label>
+                                    <input type="number" class="form-control" id="agencia" name="agencia" required>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="conta_bancaria" class="form-label mb-1">Conta bancaria:</label>
-                                    <select class="form-control" id="conta_bancaria" name="conta_bancaria" required>
-                                        <option value="#" disabled selected hidden>Selecione uma Opção...</option>
-                                        <?php
-                                        foreach ($bankAccountsList as $account) {
-                                            echo "<option value='" . htmlspecialchars($account['id']) . "'>" . htmlspecialchars($account['nome']) . "</option>";
-                                        }
-                                        ?>
+                                    <label for="Conta" class="form-label mb-1">Conta:</label>
+                                    <input type="number" class="form-control" id="conta" name="conta" required>
                                     </select>
                                 </div>
 
@@ -281,6 +266,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     </div>
 
     <script>
+        const animation = lottie.loadAnimation({
+            container: document.querySelector('.lottie-animation'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://lottie.host/d987597c-7676-4424-8817-7fca6dc1a33e/BVrFXsaeui.json'
+        });
         const toggleBtn = document.getElementById('toggleTransactions');
         if (toggleBtn) {
             let expanded = false;
@@ -305,11 +297,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 
 </html>
 <style>
+    .error-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #f8f9fa;
+    }
+
+    .error-content {
+        text-align: center;
+    }
+
+    .error-content h1 {
+        font-size: 6rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .error-content p {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .lottie-animation {
+        max-width: 400px;
+        margin-bottom: 2rem;
+    }
+
     .modal {
         display: none;
         position: fixed;
         top: 0;
         left: 0;
+        min-width: 100vh;
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.5);
