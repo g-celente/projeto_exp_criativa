@@ -3,9 +3,11 @@ include '../../app/model/BankAccount.php';
 include("../../protected.php");
 include '../../app/model/Entries.php';
 include("../../app/service/DashboardService.php");
+include("../../app/model/Reminders.php");
 
 $userId = $_SESSION['id'];
-$hasAccount = !empty(getUserBankAccounts($userId));
+$hasAccount = getUserBankAccounts($userId);
+$reminders = getRemindersByUserPago();
 
 $transactions = getTransactionsList();
 $entries = getEntriesList();
@@ -91,7 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             </div>
         <?php else: ?>
             <h1>Minha Conta</h1>
-            <!-- Área de Cartões no Topo -->
 
             <div class="grid-two-column">
                 <!-- Card da Conta Bancária -->
@@ -99,26 +100,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                     <div class="card">
                         <div class="card-header">
                             <span class="card-type">Conta Bancária</span>
-                            <span class="card-logo">Banco XYZ</span>
+                            <span class="card-logo">
+                                <?php echo htmlspecialchars($hasAccount[0]["nome"]); ?>
+                            </span>
                         </div>
                         <div class="card-balance">Saldo: R$ <?= number_format(getTotalBalanceService(), 2, ',', '.') ?></div>
                         <div class="card-number">•••• •••• •••• 1234</div>
                         <div class="card-footer">
                             <span>Atualizado</span>
-                            <span>Gabriel Moribe</span>
+                            <span><?php echo htmlspecialchars($hasAccount[0]["usuario_nome"]); ?></span>
                         </div>
                     </div>
 
                     <div class="card">
                         <div class="card-header">
                             <span class="card-type">Entradas</span>
-                            <span class="card-logo">VISA</span>
+                            <span class="card-logo"><?php echo htmlspecialchars($hasAccount[0]["nome"]); ?></span>
                         </div>
                         <div class="card-balance">R$ <?= number_format(getTotalRevenueService(), 2, ',', '.') ?></div>
                         <div class="card-number">•••• •••• •••• 4562</div>
                         <div class="card-footer">
                             <span>08/25</span>
-                            <span>Gabriel Moribe</span>
+                            <span><?php echo htmlspecialchars($hasAccount[0]["usuario_nome"]); ?></span>
                         </div>
                     </div>
 
@@ -126,13 +129,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                     <div class="card" style="background: linear-gradient(135deg, #10b981, #34d399);">
                         <div class="card-header">
                             <span class="card-type">Saídas</span>
-                            <span class="card-logo">VISA</span>
+                            <span class="card-logo"><?php echo htmlspecialchars($hasAccount[0]["nome"]); ?></span>
                         </div>
                         <div class="card-balance">R$ <?= number_format(getTotalExpensesService(), 2, ',', '.') ?></div>
                         <div class="card-number">•••• •••• •••• 4562</div>
                         <div class="card-footer">
                             <span>05/26</span>
-                            <span>Gabriel Moribe</span>
+                            <span><?php echo htmlspecialchars($hasAccount[0]["usuario_nome"]); ?></span>
                         </div>
                     </div>
                 </div>
@@ -140,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                 <!-- Histórico de Transações -->
                 <div class="history-section" style="padding: 20px; background: #fff; border-radius: 8px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h2 style="font-size: 20px; font-weight: 600;">Transações Recentes</h2>
+                        <h2 style="font-size: 20px; font-weight: 600;">Contas Pagas</h2>
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <div style="color: #3498db; font-size: 14px;">
                                 <i class="fas fa-clock"></i> Filtrado Por: <strong>&nbsp;Recentes</strong>
@@ -149,15 +152,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                     </div>
 
                     <div class="transaction-cards" style="display: flex; flex-direction: column; gap: 16px;">
-                        <?php if ($entries): ?>
-                            <?php foreach ($entries as $tx): ?>
+                        <?php if ($reminders): ?>
+                            <?php foreach ($reminders as $tx): ?>
                                 <?php
-                                $valor = number_format($tx['transacao_valor'], 2, ',', '.');
-                                $descricao = htmlspecialchars($tx['transacao_descricao']);
-                                $categoria = htmlspecialchars($tx['categoria_descricao']);
-                                $conta = htmlspecialchars($tx['conta_bancaria_nome']);
-                                $tipo = $tx['transacao_tipo_id'] == 1 ? 'Transferência' : 'QR Code';
-                                $data = "Hoje"; // Substitua com data real se quiser
+                                $valor = number_format($tx['valor'], 2, ',', '.');
+                                $descricao = htmlspecialchars($tx['nome']);
+                                $tipo = 'Transferência';
+                                $data = date('d/m/Y', strtotime($tx['data_pagamento'])); // Substitua com data real se quiser
                                 $tempo = "2m atrás"; // Substitua com cálculo de tempo real
 
                                 $status = 'Done';
@@ -167,7 +168,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                                 <div class="transaction-card">
                                     <div class="col descricao">
                                         <div><?= $descricao ?></div>
-                                        <div><?= $categoria ?></div>
                                     </div>
                                     <div class="col data">
                                         <div><?= $data ?></div>
@@ -215,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             <div class="history-section">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h2 class="section-title">Histórico de Transações</h2>
-                    <a href="gerar_extrato.php" class="button" style="padding: 8px 16px; font-size: 14px;">Gerar Extrato</a>
+                    <a href="../../app/helpers/GerarExtrato.php" class="button" style="padding: 8px 16px; font-size: 14px;">Gerar Extrato</a>
                 </div>
 
                 <ul class="transaction-list" id="transactionList">
@@ -393,7 +393,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
         background: linear-gradient(135deg, var(--primary-color), #6366f1);
         color: white;
         border-radius: 12px;
-        padding: 20px;
+        padding: 15px;
         margin-bottom: 10px;
         width: 300px;
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
@@ -404,7 +404,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 5px;
     }
 
     .card-type {

@@ -10,7 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     $nome = $_POST['nome'];
     $descricao = $_POST['descricao'];
     $data_vencimento = $_POST['data_vencimento'];
-    $result = addReminder($nome, $descricao, $data_vencimento);
+    $valor = (int)$_POST['valor'];
+    $result = addReminder($nome, $descricao, $data_vencimento, $valor);
     if ($result) {
         header("Location: " . $_SERVER['REQUEST_URI']);
         exit;
@@ -159,7 +160,10 @@ $data_pagamento = isset($reminder['data_pagamento']) ? $reminder['data_pagamento
                             <label for="descricao" class="form-label mb-1">Descricao:</label>
                             <input type="text" class="form-control" id="descricao" name="descricao" required>
                         </div>
-
+                        <div class="mb-3">
+                            <label for="valor" class="form-label mb-1">Valor:</label>
+                            <input type="number" class="form-control" id="valor" name="valor" required>
+                        </div>
                         <div class="mb-3">
                             <label for="data_vencimento" class="form-label mb-1">Data de Vencimento:</label>
                             <input type="date" class="form-control" id="data_vencimento" name="data_vencimento" required>

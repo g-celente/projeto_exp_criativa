@@ -6,8 +6,8 @@ include __DIR__ . '/../model/Reminders.php';
 function listReminders(){
     return getRemindersByUser();
 }
-function addReminder( $nome , $descriacao , $data_vencimento){
-    return createReminder( $nome , $descriacao , $data_vencimento);
+function addReminder( $nome , $descriacao , $data_vencimento, $valor){
+    return createReminder( $nome , $descriacao , $data_vencimento, $valor);
 }
 function deleteReminder($lembrete_id){
     return deleteReminderById($lembrete_id);

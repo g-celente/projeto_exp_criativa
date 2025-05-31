@@ -6,12 +6,12 @@ function listExpenses() {
     return getExpensesList();
 }
 
-function createExpense($categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao) {
-    return newExpense($categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao);
+function createExpense($categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao, $date) {
+    return newExpense($categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao, $date);
 }
 
-function editExpense($categoria_id, $transacao_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao) {
-    return editExpenseById($categoria_id, $transacao_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao);
+function editExpense($categoria_id, $transacao_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao, $date) {
+    return editExpenseById($categoria_id, $transacao_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao, $date);
 }
 
 function deleteExpense($transacao_id) {

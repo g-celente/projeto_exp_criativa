@@ -39,17 +39,18 @@ function getExpensesList(){
     return $result ? pg_fetch_all($result) : false;
 }
 
-function newExpense($categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao){
+function newExpense($categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao, $date){
     $conn = create_connection();
 
     $categoria_id = pg_escape_string($conn, $categoria_id);
     $conta_bancaria_id = pg_escape_string($conn, $conta_bancaria_id);
     $transacao_valor = pg_escape_string($conn, $transacao_valor);
     $transacao_descricao = pg_escape_string($conn, $transacao_descricao);
+    $date = pg_escape_string($conn, $date);
     $usuario_id = $_SESSION['id'];
     $transacao_tipo_id = 2; 
 
-    $query = "INSERT INTO transacoes (categoria_id, usuario_id, transacao_tipo_id, conta_bancaria_id, transacao_valor, transacao_descricao) values ($categoria_id, $usuario_id, $transacao_tipo_id, $conta_bancaria_id, $transacao_valor, '$transacao_descricao')";
+    $query = "INSERT INTO transacoes (categoria_id, usuario_id, transacao_tipo_id, conta_bancaria_id, transacao_valor, transacao_descricao, transacao_data) values ($categoria_id, $usuario_id, $transacao_tipo_id, $conta_bancaria_id, $transacao_valor, '$transacao_descricao', '$date')";
 
     $result = pg_query($conn, $query);
  
@@ -57,7 +58,7 @@ function newExpense($categoria_id, $conta_bancaria_id, $transacao_valor, $transa
 
 }
 
-function editExpenseById($categoria_id, $transacao_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao){
+function editExpenseById($categoria_id, $transacao_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao, $date){
     $conn = create_connection();
     $transacao_id = pg_escape_string($conn, $transacao_id);
     $categoria_id = pg_escape_string($conn, $categoria_id);
@@ -73,6 +74,7 @@ function editExpenseById($categoria_id, $transacao_id, $conta_bancaria_id, $tran
                     conta_bancaria_id = '$conta_bancaria_id',
                     transacao_valor = '$transacao_valor',
                     transacao_descricao = '$transacao_descricao'
+                    transacao_data = '$date'
                 WHERE 
                     transacao_id = '$transacao_id';
             ";

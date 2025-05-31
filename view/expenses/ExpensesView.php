@@ -12,13 +12,14 @@ $categoriesList = listCategories();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     $categoria_id = (int)$_POST['categoria_id'];
     $conta_bancaria_id = (int)$_POST['conta_bancaria'];
-    $transacao_valor = (float)str_replace(',', '.', $_POST['valor']); 
+    $transacao_valor = (float)str_replace(',', '.', $_POST['valor']);
     $transacao_descricao = $_POST['descricao'];
+    $date = $_POST['data'];
 
-    $result = createExpense($categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao);
+    $result = createExpense($categoria_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao, $date);
 
     if ($result) {
-        
+
         header("Location: " . $_SERVER['REQUEST_URI']);
         exit;
     } else {
@@ -30,10 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 //deletar
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $expense_id = (int)$_GET['id'];
-    $result = deleteExpense($expense_id); 
+    $result = deleteExpense($expense_id);
 
     if ($result) {
-        $base_url = strtok($_SERVER['REQUEST_URI'], '?'); 
+        $base_url = strtok($_SERVER['REQUEST_URI'], '?');
         header("Location: " . $base_url);
         exit;
     } else {
@@ -49,9 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_submit'])) {
     $conta_bancaria_id = (int)$_POST['edit_conta_bancaria'];
     $transacao_valor = (float)str_replace(',', '.', $_POST['edit_valor']);
     $transacao_descricao = $_POST['edit_descricao'];
+    $data = $_POST['data'];
 
-    
-    $result = editExpense($categoria_id, $expense_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao);
+
+    $result = editExpense($categoria_id, $expense_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao, $date);
 
     if ($result) {
         header("Location: " . $_SERVER['REQUEST_URI']);
@@ -63,28 +65,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_submit'])) {
 ?>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.querySelector('.search-input');
-    const tableRows = document.querySelectorAll('.table tbody tr');
-    
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        
-        tableRows.forEach(row => {
-            const rowText = row.textContent.toLowerCase();
-            row.style.display = rowText.includes(searchTerm) ? '' : 'none';
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('.search-input');
+        const tableRows = document.querySelectorAll('.table tbody tr');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+
+            tableRows.forEach(row => {
+                const rowText = row.textContent.toLowerCase();
+                row.style.display = rowText.includes(searchTerm) ? '' : 'none';
+            });
         });
     });
-});
 
-const handleOpenEditModal = (entry) => {
-    document.getElementById('edit-entry-id').value = entry.transacao_id;
-    document.getElementById('edit_descricao').value = entry.transacao_descricao;
-    document.getElementById('edit_valor').value = entry.transacao_valor;
-    document.getElementById('edit_categoria_id').value = entry.categoria_id;
-    document.getElementById('edit_conta_bancaria').value = entry.conta_bancaria_id;
-}
-
+    const handleOpenEditModal = (entry) => {
+        document.getElementById('edit-entry-id').value = entry.transacao_id;
+        document.getElementById('edit_descricao').value = entry.transacao_descricao;
+        document.getElementById('edit_valor').value = entry.transacao_valor;
+        document.getElementById('edit_categoria_id').value = entry.categoria_id;
+        document.getElementById('edit_conta_bancaria').value = entry.conta_bancaria_id;
+    }
 </script>
 
 <!DOCTYPE html>
@@ -101,22 +102,22 @@ const handleOpenEditModal = (entry) => {
 
 <body>
 
-    <?php include("../../assets/templates/sideBar/BaseSideBar.php")?>
+    <?php include("../../assets/templates/sideBar/BaseSideBar.php") ?>
 
     <div class="main-content">
         <h1>Saídas</h1>
-       
+
         <p>Visualize e gerencie suas saídas financeiras</p>
-        
+
         <div class="flex align-center justify-between">
-            <input type="text" placeholder="Buscar..." class="search-input" >
+            <input type="text" placeholder="Buscar..." class="search-input">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarModal">Adicionar Saída</button>
 
         </div>
 
         <div class="data-table mt-5">
             <?php
-       
+
 
             echo "<table class='table'>";
             echo "<thead>";
@@ -130,7 +131,7 @@ const handleOpenEditModal = (entry) => {
             echo "</tr>";
             echo "</thead>";
             echo "<tbody>";
-            foreach($entriesList as $entry) {
+            foreach ($entriesList as $entry) {
                 echo "<tr>";
                 echo "<td>" . (!empty($entry['transacao_id']) ? htmlspecialchars($entry['transacao_id']) : '-') . "</td>";
                 echo "<td>" . (!empty($entry['transacao_descricao']) ? htmlspecialchars($entry['transacao_descricao']) : '-') . "</td>";
@@ -138,10 +139,10 @@ const handleOpenEditModal = (entry) => {
                 echo "<td>" . (!empty($entry['categoria_descricao']) ? htmlspecialchars($entry['categoria_descricao']) : '-') . "</td>";
                 echo "<td>" . (!empty($entry['conta_bancaria_nome']) ? htmlspecialchars($entry['conta_bancaria_nome']) : '-') . "</td>";
                 echo "<td>
-                        <a class='btn btn-danger btn-sm' id='delete-btn' href='./ExpensesView.php?action=delete&id=". htmlspecialchars($entry['transacao_id']) . "'>Deletar</a>
-                        <button class='btn btn-primary btn-sm' id='edit-btn' data-bs-toggle='modal' data-bs-target='#editarModal' onClick='handleOpenEditModal(". json_encode($entry) . ")'>Editar</button>
+                        <a class='btn btn-danger btn-sm' id='delete-btn' href='./ExpensesView.php?action=delete&id=" . htmlspecialchars($entry['transacao_id']) . "'>Deletar</a>
+                        <button class='btn btn-primary btn-sm' id='edit-btn' data-bs-toggle='modal' data-bs-target='#editarModal' onClick='handleOpenEditModal(" . json_encode($entry) . ")'>Editar</button>
                     </td>";
-        
+
                 echo "</tr>";
             }
             echo "</tbody>";
@@ -153,64 +154,68 @@ const handleOpenEditModal = (entry) => {
     </div>
 
     <!-- MODAL PARA ADICIONAR -->
-        
+
     <div class="modal fade" id="adicionarModal" tabindex="-1" role="dialog" aria-labelledby="adicionarModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="adicionarModalLabel">Adicionar Saída</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form method="post">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="descricao" class="form-label mb-1">Descrição:</label>
-                        <input type="text" class="form-control" id="descricao" name="descricao" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="valor" class="form-label mb-1">Valor:</label>
-                        <input type="number" class="form-control" id="valor" name="valor" required>
-                    </div>
-          
-                    <div class="mb-3">
-                        <label for="categoria_id" class="form-label mb-1">Categoria:</label>
-                        <select class="form-control" id="categoria_id" name="categoria_id" required>
-                            <!-- Opções de categoria devem ser preenchidas aqui -->
-                            <option value="#" disabled selected hidden>Selecione uma Opção...</option>
-                            <?php
+                <div class="modal-header">
+                    <h5 class="modal-title" id="adicionarModalLabel">Adicionar Saída</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="post">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label mb-1">Descrição:</label>
+                            <input type="text" class="form-control" id="descricao" name="descricao" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="valor" class="form-label mb-1">Valor:</label>
+                            <input type="number" class="form-control" id="valor" name="valor" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="data" class="form-label mb-1">Data:</label>
+                            <input type="date" class="form-control" id="data" name="data" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="categoria_id" class="form-label mb-1">Categoria:</label>
+                            <select class="form-control" id="categoria_id" name="categoria_id" required>
+                                <!-- Opções de categoria devem ser preenchidas aqui -->
+                                <option value="#" disabled selected hidden>Selecione uma Opção...</option>
+                                <?php
                                 foreach ($categoriesList as $category) {
                                     echo "<option value='" . htmlspecialchars($category['categoria_id']) . "'>" . htmlspecialchars($category['categoria_descricao']) . "</option>";
                                 }
-                            ?>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="conta_bancaria" class="form-label mb-1">Conta bancaria:</label>
-                        <select class="form-control" id="conta_bancaria" name="conta_bancaria" required>
-                            <!-- Opções de categoria devem ser preenchidas aqui -->
-                            <option value="#" disabled selected hidden>Selecione uma Opção...</option>
-                            <?php
+                                ?>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="conta_bancaria" class="form-label mb-1">Conta bancaria:</label>
+                            <select class="form-control" id="conta_bancaria" name="conta_bancaria" required>
+                                <!-- Opções de categoria devem ser preenchidas aqui -->
+                                <option value="#" disabled selected hidden>Selecione uma Opção...</option>
+                                <?php
                                 foreach ($bankAccountsList as $account) {
                                     echo "<option value='" . htmlspecialchars($account['id']) . "'>" . htmlspecialchars($account['nome']) . "</option>";
                                 }
-                            ?>
-                        </select>
+                                ?>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="submit" class="btn btn-primary">Adicionar</button>
-                </div>
-            </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" name="submit" class="btn btn-primary">Adicionar</button>
+                    </div>
+                </form>
 
             </div>
         </div>
     </div>
-        
-       
-       <!-- MODAL PARA EDITAR -->
+
+
+    <!-- MODAL PARA EDITAR -->
     <div class="modal fade" id="editarModal" tabindex="-1" role="dialog" aria-labelledby="editarModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -231,14 +236,17 @@ const handleOpenEditModal = (entry) => {
                             <label for="edit_valor" class="form-label mb-1">Valor:</label>
                             <input type="number" step="0.01" class="form-control" id="edit_valor" name="edit_valor" required>
                         </div>
-                    
+                        <div class="mb-3">
+                            <label for="data" class="form-label mb-1">Data:</label>
+                            <input type="date" class="form-control" id="data" name="data" required>
+                        </div>
                         <div class="mb-3">
                             <label for="edit_categoria_id" class="form-label mb-1">Categoria:</label>
                             <select class="form-control" id="edit_categoria_id" name="edit_categoria_id">
                                 <?php
-                                    foreach ($categoriesList as $category) {
-                                        echo "<option value='" . htmlspecialchars($category['categoria_id']) . "'>" . htmlspecialchars($category['categoria_descricao']) . "</option>";
-                                    }
+                                foreach ($categoriesList as $category) {
+                                    echo "<option value='" . htmlspecialchars($category['categoria_id']) . "'>" . htmlspecialchars($category['categoria_descricao']) . "</option>";
+                                }
                                 ?>
                             </select>
                         </div>
@@ -247,9 +255,9 @@ const handleOpenEditModal = (entry) => {
                             <select class="form-control" id="edit_conta_bancaria" name="edit_conta_bancaria">
                                 <option value="0">Nenhuma</option>
                                 <?php
-                                    foreach ($bankAccountsList as $account) {
-                                        echo "<option value='" . htmlspecialchars($account['id']) . "'>" . htmlspecialchars($account['nome']) . "</option>";
-                                    }
+                                foreach ($bankAccountsList as $account) {
+                                    echo "<option value='" . htmlspecialchars($account['id']) . "'>" . htmlspecialchars($account['nome']) . "</option>";
+                                }
                                 ?>
                             </select>
                         </div>
@@ -272,7 +280,8 @@ const handleOpenEditModal = (entry) => {
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap');
-    .search-input{
+
+    .search-input {
         width: 400px;
         padding: 5px;
         border-radius: 5px;
@@ -289,51 +298,51 @@ const handleOpenEditModal = (entry) => {
         border-collapse: separate;
         border-spacing: 0;
     }
-    
+
     .table thead th {
-        background-color:rgb(240, 240, 240);
-    
+        background-color: rgb(240, 240, 240);
+
         font-weight: 600;
         padding: 15px;
         border: none;
     }
-    
+
     .table tbody tr:nth-child(even) {
         background-color: #f8f9fa;
     }
-    
+
     .table tbody tr:nth-child(odd) {
         background-color: #ffffff;
     }
-    
+
     .table tbody tr:hover {
         background-color: #e9f5ff;
         transition: all 0.2s ease;
     }
-    
+
     .table td {
         padding: 12px 15px;
         border-top: 1px solid #f0f0f0;
         vertical-align: middle;
     }
-    
+
     .table th:first-child {
         border-radius: 10px 0 0 0;
     }
-    
+
     .table th:last-child {
         border-radius: 0 10px 0 0;
     }
-    
+
     .table tr:last-child td:first-child {
         border-radius: 0 0 0 10px;
     }
-    
+
     .table tr:last-child td:last-child {
         border-radius: 0 0 10px 0;
     }
 
-    .close{
+    .close {
         background: none;
         border: none;
     }

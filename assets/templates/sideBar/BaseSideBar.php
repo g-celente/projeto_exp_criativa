@@ -22,7 +22,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <li class="nav-item <?php echo ($current_page == 'BankAccountsView.php') ? 'active' : ''; ?>">
             <a href="../bank-accounts/BankAccountsView.php"><i class="fa-solid fa-building-columns"></i>Conta Bancária</a>
             <li class="nav-item <?php echo ($current_page == 'RemindersView.php') ? 'active' : ''; ?>">
-                <a href="../reminders/RemindersView.php"><i class="fa fa-calendar-o"></i>Lembretes</a>
+                <a href="../reminders/RemindersView_copy.php"><i class="fa fa-calendar-o"></i>Lembretes</a>
             </li>
         </li>
         <li class="nav-item <?php echo ($current_page == 'ProfileView.php') ? 'active' : ''; ?>">

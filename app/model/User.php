@@ -3,13 +3,67 @@
 // Inclui o arquivo "db.php" que contém a função create_connection() para conectar ao banco de dados
 include __DIR__ . '/../../database/db.php';
 
-function authenticate($email, $senha) {
+
+function getAllTransactionByUser()
+{
+    // Iniciar sessão se não estiver iniciada
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // Verificar se usuário está logado
+    if (!isset($_SESSION['id'])) {
+        error_log("Usuário não logado - Sessão ID não definida");
+        return false;
+    }
+
+    $conn = create_connection();
+    if (!$conn) {
+        error_log("Falha ao conectar ao banco de dados");
+        return false;
+    }
+
+    $usuario_id = $_SESSION['id'];
+
+    // Query corrigida - usando pg_query_params em vez de pg_execute
+    $query = "SELECT 
+                t.transacao_id,
+                t.transacao_valor,
+                t.transacao_descricao,
+                t.categoria_id,
+                t.conta_bancaria_id,
+                t.transacao_tipo_id,
+                t.transacao_data,
+                ca.categoria_descricao,
+                c.nome AS conta_bancaria_nome
+            FROM transacoes t
+            INNER JOIN conta_bancaria c ON t.conta_bancaria_id = c.id
+            INNER JOIN categorias ca ON t.categoria_id = ca.categoria_id
+            WHERE t.usuario_id = $1";
+
+    // Usando pg_query_params que é mais direto para este caso
+    $result = pg_query_params($conn, $query, [$usuario_id]);
+
+    if (!$result) {
+        error_log("Erro na query: " . pg_last_error($conn));
+        pg_close($conn);
+        return false;
+    }
+
+    $data = pg_fetch_all($result);
+    pg_close($conn);
+
+    return $data ?: false; // Retorna false se não houver dados
+}
+
+function authenticate($email, $senha)
+{
     $conn = create_connection(); // Chama a função create_connection() para estabelecer uma conexão com o banco de dados.
-    
+
     if (!$conn) {
         return "Erro ao conectar ao banco de dados.";
     }
-    
+
     $email = pg_escape_string($conn, $email); // Evita injeção de SQL.
     $senha = pg_escape_string($conn, $senha);
 
@@ -33,7 +87,8 @@ function authenticate($email, $senha) {
 }
 
 
-function create_user($name, $email, $cpf, $password) {
+function create_user($name, $email, $cpf, $password)
+{
     $conn = create_connection();
 
     $name = pg_escape_string($conn, $name);
@@ -55,12 +110,13 @@ function create_user($name, $email, $cpf, $password) {
 }
 
 
-function deleteUser($userId) {
+function deleteUser($userId)
+{
     global $mysqli;
 
     $sql_code = "DELETE FROM users WHERE id = $userId";
     if ($mysqli->query($sql_code)) { // $mysqli é um objeto de conexão com o banco de dados e query() é um atributo que executa a consulta SQL.
-        return true;                 
+        return true;
     }
     return false;
 }
@@ -69,7 +125,8 @@ function deleteUser($userId) {
 
 // ---------------- TESTE  CRUD CARTOES------------------ //
 
-function create_card($user_id, $card_name, $card_number, $expiration_date, $card_type) {
+function create_card($user_id, $card_name, $card_number, $expiration_date, $card_type)
+{
     $conn = create_connection();
 
     $user_id = pg_escape_string($conn, $user_id);
@@ -85,7 +142,8 @@ function create_card($user_id, $card_name, $card_number, $expiration_date, $card
     return $result ? true : "Erro ao cadastrar o cartão.";
 }
 
-function list_cards($user_id) {
+function list_cards($user_id)
+{
     $conn = create_connection();
 
     $user_id = pg_escape_string($conn, $user_id);
@@ -105,7 +163,8 @@ function list_cards($user_id) {
     return $cards;
 }
 
-function update_card($card_id, $card_name, $card_number, $expiration_date, $card_type) {
+function update_card($card_id, $card_name, $card_number, $expiration_date, $card_type)
+{
     $conn = create_connection();
 
     $card_id = pg_escape_string($conn, $card_id);
@@ -122,7 +181,29 @@ function update_card($card_id, $card_name, $card_number, $expiration_date, $card
     return $result ? true : "Erro ao atualizar o cartão.";
 }
 
-function delete_card($card_id) {
+function getUserById($userId) {
+    $conn = create_connection();
+
+    $userId = pg_escape_string($conn, $userId);
+
+    $query = "
+        SELECT 
+            users.*, 
+            conta_bancaria.agencia, 
+            conta_bancaria.conta 
+        FROM users
+        LEFT JOIN conta_bancaria ON conta_bancaria.usuario_id = users.id
+        WHERE users.id = '$userId'
+        LIMIT 1
+    ";
+
+    $result = pg_query($conn, $query);
+
+    return $result ? pg_fetch_assoc($result) : false;
+}
+
+function delete_card($card_id)
+{
     $conn = create_connection();
 
     $card_id = pg_escape_string($conn, $card_id);

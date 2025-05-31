@@ -14,12 +14,26 @@ tabela de conta_bancaria
 function getUserBankAccounts($userId) {
     $conn = create_connection();
 
-    $query = "SELECT id, nome, usuario_id FROM conta_bancaria WHERE usuario_id = '$userId'";
+    $query = "
+        SELECT 
+            cb.id, 
+            cb.nome, 
+            cb.usuario_id, 
+            cb.agencia, 
+            cb.conta, 
+            u.name AS usuario_nome
+        FROM conta_bancaria cb
+        JOIN users u ON cb.usuario_id = u.id
+        WHERE cb.usuario_id = $1
+    ";
 
-    $result = pg_query($conn, $query);
+    $stmt = 'get_user_accounts_' . uniqid();
+    pg_prepare($conn, $stmt, $query);
+    $result = pg_execute($conn, $stmt, [$userId]);
 
     return $result ? pg_fetch_all($result) : false;
 }
+
 
 function getTransactionsList(){
     $conn = create_connection();
