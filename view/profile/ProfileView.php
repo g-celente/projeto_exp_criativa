@@ -219,6 +219,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                     </div>
                 </form>
+
+                <form method="POST" action="../../app/helpers/DeleteAccountHelper.php" onsubmit="return confirm('Tem certeza que deseja deletar sua conta? Esta ação é irreversível.');">
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn btn-danger" style="background-color:red;">Deletar Conta</button>
+                     </div>
+                </form>
             </div>
         </div>
     </div>
