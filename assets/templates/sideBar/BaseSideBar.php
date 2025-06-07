@@ -25,6 +25,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <a href="../reminders/RemindersView_copy.php"><i class="fa fa-calendar-o"></i>Lembretes</a>
             </li>
         </li>
+        <li class="nav-item <?php echo ($current_page == 'NotificationView.php') ? 'active' : ''; ?>">
+            <a href="../notification-settings/NotificationSettingsView.php"><i class="fa-solid fa-bell"></i>Notificações</a>
+        </li>
         <li class="nav-item <?php echo ($current_page == 'ProfileView.php') ? 'active' : ''; ?>">
             <a href="../profile/ProfileView.php"><i class="fa-solid fa-user"></i>Perfil</a>
         </li>

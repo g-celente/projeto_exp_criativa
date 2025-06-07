@@ -5,6 +5,7 @@ include '../../app/model/Entries.php';
 include("../../app/service/DashboardService.php");
 include("../../app/model/Reminders.php");
 
+
 $userId = $_SESSION['id'];
 $hasAccount = getUserBankAccounts($userId);
 $reminders = getRemindersByUserPago();
@@ -18,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     $agencia = (int)$_POST['agencia'];
     $conta = (int)$_POST['conta'];
 
-    $result = newBankAccount($conta_bancaria, $agencia, $conta);
+    $result = createBankAccount($conta_bancaria, $agencia, $conta);
 
     if ($result) {
         header("Location: " . $_SERVER['REQUEST_URI']);
