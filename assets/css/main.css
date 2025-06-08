@@ -1,6 +1,9 @@
+/* Base imports */
+@import "./variables.css";
+@import "./custom.css";
+
 /* Padding */
 
-@import "./variables.css";
 .p-1 {
   padding: 1rem;
 }
@@ -246,16 +249,26 @@
 }
 
 body {
-  background-color: #f8fafc;
-  color: #1e293b;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
 }
 
 .main-content {
   flex: 1;
-  padding: 30px 40px;
-  margin-left: 220px;
-  max-width: 100%;
-  overflow-x: hidden;
+  margin-left: 250px;
+  padding: 2rem;
+  transition: all var(--transition-speed);
+  width: calc(100% - 250px);
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 1rem;
+  }
 }
 
 /* Sidebar de Navegação */
@@ -346,4 +359,29 @@ body {
   background-color: #f1f5f9;
   padding-left: 10px;
   border-radius: 8px;
+}
+
+/* Grid System Enhancement */
+.row {
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+}
+
+.col,
+[class*="col-"] {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+/* Container Fluid Enhancement */
+.container-fluid {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (max-width: 576px) {
+  .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }

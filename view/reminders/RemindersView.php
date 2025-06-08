@@ -127,25 +127,24 @@ $data_pagamento = isset($reminder['data_pagamento']) ? $reminder['data_pagamento
     <div class="main-content">
         <h1>Lembretes</h1>
 
-        <p>Veja suas pendencias</p>
-
-        <div class="flex align-center justify-between">
-            <input type="text" placeholder="Buscar..." class="search-input">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarModal">Novo Lembrete</button>
-
+        <p>Veja suas pendencias</p>        <div class="flex align-center justify-between mb-4">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Buscar lembretes..." class="search-input">
+            </div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarModal">
+                <i class="fas fa-plus"></i>
+                Novo Lembrete
+            </button>
         </div>
 
-        <div class="data-table mt-5">
-            <?php
-
-
-            echo "<table class='table'>";
+        <div class="reminders-container">
+            <?php            echo "<table class='table'>";
             echo "<thead>";
             echo "<tr>";
-            echo "<th>ID</th>";
             echo "<th>Nome</th>";
             echo "<th>Descrição</th>";
-            echo "<th>Data de vencimento</th>";
+            echo "<th>Vencimento</th>";
             echo "<th>Status</th>";
             echo "<th>Ações</th>";
             echo "</tr>";
@@ -153,28 +152,26 @@ $data_pagamento = isset($reminder['data_pagamento']) ? $reminder['data_pagamento
             echo "<tbody>";
 
             foreach ($reminders as $reminder) {
+                $statusClass = $reminder['status'] === 'pago' ? 'status-paid' : 'status-pending';
+                $statusIcon = $reminder['status'] === 'pago' ? 'fa-check-circle' : 'fa-clock';
+                $statusText = $reminder['status'] === 'pago' 
+                    ? "Pago em " . date('d/m/Y', strtotime($reminder['data_pagamento']))
+                    : "Pendente";
+                
                 echo "<tr>";
-                echo "<td>" . (!empty($reminder['id']) ? htmlspecialchars($reminder['id']) : '-') . "</td>";
-                echo "<td>" . (!empty($reminder['nome']) ? htmlspecialchars($reminder['nome']) : '-') . "</td>";
+                echo "<td class='font-medium'>" . (!empty($reminder['nome']) ? htmlspecialchars($reminder['nome']) : '-') . "</td>";
                 echo "<td>" . (!empty($reminder['descricao']) ? htmlspecialchars($reminder['descricao']) : '-') . "</td>";
-                echo "<td>" . (!empty($reminder['data_vencimento']) ? htmlspecialchars($reminder['data_vencimento']) : '-') . "</td>";
-                echo "<td>";
-                if ($reminder['status'] === 'pago') {
-                    echo "Pago em " . htmlspecialchars($reminder['data_pagamento']);
-                } else {
-                    echo "Pendente";
-                }
-                echo "</td>";
-                echo "<td>
-
-                <a class='btn btn-danger btn-sm' id='delete-btn' href='./RemindersView.php?action=delete&id=" . htmlspecialchars($reminder['id']) . "'>Deletar</a>
-                <button class='btn btn-primary btn-sm' id='edit-btn' data-bs-toggle='modal' data-bs-target='#editarModal' onClick='handleOpenEditModal(" . json_encode($reminder) . ")'>Editar</button>";
-                if ($reminder['status'] !== 'pago') {
-                    echo "<form method='post' style='display:inline;'>
+                echo "<td>" . (!empty($reminder['data_vencimento']) ? date('d/m/Y', strtotime($reminder['data_vencimento'])) : '-') . "</td>";
+                echo "<td><span class='status-badge {$statusClass}'><i class='fas {$statusIcon} mr-2'></i>{$statusText}</span></td>";                echo "<td class='actions'>
+                    <div class='btn-group'>
+                        <button class='btn btn-icon btn-primary' id='edit-btn' data-bs-toggle='modal' data-bs-target='#editarModal' onClick='handleOpenEditModal(" . json_encode($reminder) . ")'><i class='fas fa-edit'></i></button>
+                        <a class='btn btn-icon btn-danger' id='delete-btn' href='./RemindersView.php?action=delete&id=" . htmlspecialchars($reminder['id']) . "'><i class='fas fa-trash-alt'></i></a>";
+                if ($reminder['status'] !== 'pago') {                    echo "<form method='post' style='display:inline;'>
                         <input type='hidden' name='lembrete_id' value='" . htmlspecialchars($reminder['id']) . "'>
-                            <button type='submit' name='pago_submit' class='btn btn-success btn-sm'>Pago</button>
+                        <button type='submit' name='pago_submit' class='btn btn-icon btn-success'><i class='fas fa-check'></i></button>
                     </form>";
                 }
+                echo "</div>";
                 echo "</td>";
                 echo "</tr>";
             }
@@ -285,69 +282,217 @@ $data_pagamento = isset($reminder['data_pagamento']) ? $reminder['data_pagamento
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap');
 
-    .search-input {
+    .search-container {
+        position: relative;
         width: 400px;
-        padding: 5px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        margin-right: 10px;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 10px 15px 10px 40px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+    }
+
+    .reminders-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        margin-top: 24px;
+        padding: 24px;
     }
 
     .table {
-        background-color: #fff;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        margin-top: 20px;
+        width: 100%;
         border-collapse: separate;
         border-spacing: 0;
     }
 
     .table thead th {
-        background-color: rgb(240, 240, 240);
-
+        background-color: #f8fafc;
         font-weight: 600;
-        padding: 15px;
-        border: none;
+        padding: 16px;
+        color: #1e293b;
+        font-size: 14px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border-bottom: 2px solid #e2e8f0;
     }
 
-    .table tbody tr:nth-child(even) {
-        background-color: #f8f9fa;
-    }
-
-    .table tbody tr:nth-child(odd) {
-        background-color: #ffffff;
-    }
-
-    .table tbody tr:hover {
-        background-color: #e9f5ff;
+    .table tbody tr {
         transition: all 0.2s ease;
     }
 
+    .table tbody tr:hover {
+        background-color: #f1f5f9;
+        transform: translateY(-1px);
+    }
+
     .table td {
-        padding: 12px 15px;
-        border-top: 1px solid #f0f0f0;
+        padding: 16px;
+        color: #475569;
+        font-size: 14px;
+        border-bottom: 1px solid #e2e8f0;
         vertical-align: middle;
     }
 
-    .table th:first-child {
-        border-radius: 10px 0 0 0;
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 9999px;
+        font-size: 12px;
+        font-weight: 500;
     }
 
-    .table th:last-child {
-        border-radius: 0 10px 0 0;
+    .status-pending {
+        background-color: #fef3c7;
+        color: #92400e;
     }
 
-    .table tr:last-child td:first-child {
-        border-radius: 0 0 0 10px;
+    .status-paid {
+        background-color: #dcfce7;
+        color: #166534;
     }
 
-    .table tr:last-child td:last-child {
-        border-radius: 0 0 10px 0;
+    .btn {
+        padding: 8px 16px;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.2s;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
-    .close {
-        background: none;
+    .btn i {
+        font-size: 16px;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
         border: none;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+    }
+
+    .btn-danger {
+        background: #ef4444;
+        border: none;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+    }
+
+    .btn-success {
+        background: #10b981;
+        border: none;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: #059669;
+        transform: translateY(-1px);
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-icon {
+        padding: 8px;
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #e2e8f0;
+        padding: 20px 24px;
+    }
+
+    .modal-title {
+        font-weight: 600;
+        font-size: 18px;
+        color: #1e293b;
+    }
+
+    .modal-body {
+        padding: 24px;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #e2e8f0;
+        padding: 16px 24px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #475569;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        padding: 10px 12px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+    }
+
+    .mb-3 {
+        margin-bottom: 20px;
+    }
+
+    .mb-4 {
+        margin-bottom: 24px;
+    }
+
+    .font-medium {
+        font-weight: 500;
+    }
+
+    .mr-2 {
+        margin-right: 8px;
     }
 </style>

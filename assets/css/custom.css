@@ -1,0 +1,241 @@
+/* Custom styles - Enhance MoneyTrack UI */
+
+/* Base & Typography */
+:root {
+    --transition-speed: 0.3s;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --blur-bg: rgba(255, 255, 255, 0.9);
+}
+
+body {
+    transition: background-color var(--transition-speed);
+}
+
+/* Enhanced Cards */
+.card {
+    transition: all var(--transition-speed);
+    border: none;
+    box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Form Elements */
+.form-control, .form-select {
+    transition: all var(--transition-speed);
+    border-radius: 0.5rem;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    transform: translateY(-1px);
+}
+
+.form-floating > label {
+    padding: 0.75rem 0.75rem;
+}
+
+/* Buttons Enhancement */
+.btn {
+    transition: all var(--transition-speed);
+    border-radius: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+/* Sidebar Enhancement */
+.nav-sidebar {
+    transition: all var(--transition-speed);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: var(--blur-bg);
+    box-shadow: var(--shadow-md);
+}
+
+.nav-item {
+    transition: all var(--transition-speed);
+}
+
+.nav-item:hover {
+    transform: translateX(5px);
+}
+
+/* Tables Enhancement */
+.table-responsive {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.table th {
+    background-color: rgba(0,0,0,0.02);
+    font-weight: 600;
+}
+
+/* Modal Enhancement */
+.modal-content {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal.fade .modal-dialog {
+    transition: transform var(--transition-speed);
+}
+
+/* Alert Enhancement */
+.alert {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+    .nav-sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        z-index: 1030;
+    }
+
+    .nav-sidebar.show {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    .table-responsive {
+        margin: 0 -0.75rem;
+    }
+}
+
+/* Custom Utility Classes */
+.transition-all {
+    transition: all var(--transition-speed);
+}
+
+.hover-lift {
+    transition: transform var(--transition-speed);
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+}
+
+.shadow-hover {
+    transition: box-shadow var(--transition-speed);
+}
+
+.shadow-hover:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Header/Navigation Enhancement */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: var(--blur-bg);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Input Groups Enhancement */
+.input-group {
+    transition: all var(--transition-speed);
+}
+
+.input-group:focus-within {
+    transform: translateY(-1px);
+}
+
+.input-group-text {
+    border-radius: 0.5rem;
+    border: 1px solid #ced4da;
+}
+
+/* List Groups Enhancement */
+.list-group-item {
+    transition: all var(--transition-speed);
+    border: none;
+    margin-bottom: 0.25rem;
+    border-radius: 0.5rem !important;
+}
+
+.list-group-item:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Dropdown Enhancement */
+.dropdown-menu {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-lg);
+    animation: dropdownFade var(--transition-speed);
+}
+
+@keyframes dropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Card Stats Enhancement */
+.stats-grid {
+    gap: 1.5rem;
+}
+
+.stat-card {
+    transition: all var(--transition-speed);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Form Validation States */
+.was-validated .form-control:valid:focus,
+.was-validated .form-select:valid:focus {
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.15);
+}
+
+.was-validated .form-control:invalid:focus,
+.was-validated .form-select:invalid:focus {
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.15);
+}
+
+/* Notification Badge Enhancement */
+.badge {
+    transition: all var(--transition-speed);
+}
+
+.badge:hover {
+    transform: scale(1.1);
+}

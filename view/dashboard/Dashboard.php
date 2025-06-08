@@ -20,6 +20,7 @@ $categoriesList = listCategories();
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/custom.css">
 </head>
 
 
@@ -53,7 +54,7 @@ $categoriesList = listCategories();
 
             <!-- RESUMO/DADOS DA CONTA -->
             <section class="stats-grid">
-                <div class="stat-card">
+                <div class="stat-card shadow-hover">
                     <div class="card-info">
                         <h4 class="card-label">Receita</h4>
                         <h4 class="card-value">R$ <?= number_format(getTotalRevenueService(), 2, ',', '.') ?></h4>
@@ -92,7 +93,7 @@ $categoriesList = listCategories();
             <section class="charts-section">
                 <div class="tabs">
 
-                    <div class="tab-content" id="tabContent">
+                    <div class="tab-content shadow-hover" id="tabContent">
                         <div class="tab-panel" id="overview">
                             <div class="charts-grid">
                                 <div class="chart">
