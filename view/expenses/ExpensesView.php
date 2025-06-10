@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_submit'])) {
     $data = $_POST['data'];
 
 
-    $result = editExpense($categoria_id, $expense_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao, $date);
+    $result = editExpense($categoria_id, $expense_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao, $data);
 
     if ($result) {
         header("Location: " . $_SERVER['REQUEST_URI']);
