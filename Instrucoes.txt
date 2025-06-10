@@ -1,72 +1,72 @@
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-REGISTRO DE USUARIOS:
-- O arquivo "CadastroView.php" contem o formulario de registro.
-- Quando o formulario é enviado, os dados são enviados via POST para a função register() no "UserService.php"
-- A função register() chama a função create_user() no "UserService.php", que faz as verificações necessarias antes de inserir os dados no banco
-- Apos o registro bem sucedido, o usuario é redirecionado para a pagina de login
+-----CRUD CADASTRO - NUMERO DA SORTE-----
+INSERINDO NO BANCO:
+    1 - Criar campo no banco " ALTER TABLE users ADD COLUMN numero_da_sorte INT ; "
+    2 - Adicionar campo em CadastroView.php
+    3 - Declarar variavel "$num_sorte = $_POST['num_sorte']" e passa-la para register( ) , em CadastroView.php
+    4 - Passar "$num_sorte" para create_user( ), em UserService.php
+    5 - Declarar "$num_sorte = pg_escape_string($conn, $num_sorte)" a adicionar campo na query, em User.php
 
-LOGIN DE USUARIO:
-- O arquivo "LoginView.php" contem o formulario de login
-- Quando o formulario é enviado, os dados sao enviados via POST para login() no arquivo "UserService.php"
-- A funcao login() chama authenticate() em "User.php" que verifica se o email e a senha correspondem as no BD e retorna os dados se o processo for bem sucedido
-- Apos o login bem sucedido, a sessao é iniciada e o usuário é redirecionado para a pagina principal "Home.php"
-
-ACESSO AO PAINEL:
-- A pagina "Home.php" é protegida por "protected.php", que verifica se o usuario esta logado
-- Caso o usuario nao esteja logado, é redirecionado para a pagina de login
+CHAMANDO DO BANCO:
+    1 - Declarar variavel "$_SESSION['numero_da_sorte'] = $user['numero_da_sorte']" em UserService.php, dentro da funcao login( )
+    2 - Declarar variavel "$num_sorte = isset($_SESSION['numero_da_sorte']) ? $_SESSION['numero_da_sorte'] : ''" em ProfileView.php
+    3 - Adicionar campo em ProfileView.php
 
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-ESTRUTURA DE ARQUIVOS:
-- "User.php": Contem as funcoes relacionadas ao banco de dados (ex: autenticacao e criacao de users)
-- "UserService.php" : Contem as funcoes de logica (login e cadastro)
-- "db.php" : Configura a conexão com o BD PostgreSQL
-- "LoginView.php e CadastroView.php": Formularios de login e registro
-- "Home.php": Página principal, acessavel apenas por usuarios autenticados
-- "Protected.php" : Verifica se o usuario esta logado antes de permitir acesso a "Home.php"
-- "BaseSideBar.php": HTML e CSS para a barra lateral
+
+-----CRUD ENTRADAS - COR FAVORITA-----
+INSERINDO NO BANCO:
+    1 - Criar campo no banco " ALTER TABLE transacoes ADD COLUMN cor_favorita TEXT; "
+    2 - Adicionar campo em EntriesView.php
+    3 - Declarar variavel "$cor_favorita = $_POST['cor_favorita']" e passa-la para createEntry( ) , em EntriesView.php
+    4 - Passar "$cor_favorita" para newEntry( ) , em EntriesService.php
+    5 - Declarar "$cor_favorita = pg_escape_string($conn, $cor_favorita)" e adicionar campo na query, em Entries.php
+
+CHAMANDO DO BANCO:
+    1 - Adicionar campo na query em getEntriesList( ) , em Entries.php
+    2 - Adicionar campos em EntriesView.php
 
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-BANCO DE DADOS: 
--TABELA USERS:
-    - id,
-    - name,
-    - email,
-    - cpf,
-    - password;
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-FLUXO DE SEGURANÇA:
-- Sessoes: mantem o estado de login do usuario.
-- Proteção de páginas: "protected.php" impede o acesso nao autorizado as paginas protegidas
-- Validação de dados:  utilizam pg_escape_string para evitar injecao SQL
-    -pg_escape_string : funcao sanitize() usada para filtrar inputs
+-----CRUD SAIDAS - DATETIME-----
+INSERINDO NO BANCO:
+    1 - Criar campo no banco " ALTER TABLE transacoes ADD COLUMN data_saida TIMESTAMP; "
+    2 - Adicionar campo em ExpensesView.php *
+    3 - Declarar variavel "$datetime = $_POST['datetime']" e passa-la para createExpenses( ) , em ExpensesView.php           
+    4 - Passar variavel para newExpense( ) , em ExpensesService.php
+    5 - Declarar "$datetime = pg_escape_string($conn, $datetime)" e adicionar campo na query, em Expenses.php
+
+CHAMANDO DO BANCO:
+    1 - Adicionar campo na query em getExpensesList( ) em Expenses.php
+    2 - Adicionar campos em ExpensesView.php
+
+* FORMATOS DE DATE/TIME
+    Tipo	           Formato	             Exemplo
+    date	          YYYY-MM-DD	        2025-06-09
+    time	            HH:MM	              14:30
+datetime-local	    YYYY-MM-DDTHH:MM	 2025-06-09T14:30
 
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-DETALHAMENTO DE PASTAS
-1.RAIZ DO PROJETO:
-- "protected.php" : Arquivo que protege paginas restritas, verificando se o usuario esta logado.
-- ".gitignore" : Define arquivos que nao devem ser versionados pelo git.
 
-2.QODO:
-- "history.sqlite" : ?????
+-----CRUD LEMBRETES - VALOR-----
+INSERINDO NO BANCO:
+    1 - Criar campo no banco "ALTER TABLE lembretes ADD COLUMN valor FLOAT;"
+    2 - Adicionar campo em RemindersView.php
+    3 - Declarar variavel "$valor = $_POST['valor']" e passa-la para addReminder( ), em RemindersView.php
+    4 - Passar variavel para createReminder( ) , em RemindersService.php
+    5 - Adicionar "$valor" na query e em pg_execute( ) , em Reminders.php
 
-3.APP:
-- Model/"User.php" : Define funcoes relacionadas ao banco (autenticacao e criacao de usuarios)
-- Service/"UserService".php : implementa funcoes de login, registro e exclusao de usuarios utilizando as funcoes do model
+CHAMANDO DO BANCO:
+    1 - Adicionar campos em RemindersView.php
 
-4.ASSETS:
--templates/sideBar/"BaseSideBar.php" : HTML e CSS da barra lateral
 
-5.DATABASE:
-- "db.php" : Configura a conexao com o banco PostgreSQL
-- "test_connection.php" : Testa a conexao com o banco e lista as tabelas disponiveis
 
-6.VIEW:
-- "Home.php" : Pagina principal, acessivel somente por usuarios cadastrados (protegida por "protected.php")
+-----CRUD CONTA BANCARIA - NOME DA MAE-----
+INSERINDO NO BANCO:
+    1 - Criar campo no banco "ALTER TABLE conta_bancaria ADD COLUMN nome_da_mae VARCHAR(50)"
+    2 - Adicionar campo em BankAccountsView.php
+    3 - Declarar variavel "$nome_mae = $_POST['nome_mae']" e passa-la para createBankAccount( )
+    4 - Declarar "$nome_mae = pg_escape_string($conn, $nome_mae)" e adicionar campos na query
 
-7.VIEW/AUTH:
-- "CadastroView.php" : Formulario de registro de usuarios
-- "LoginView.php" : Formulario de login de usuarios
+CHAMANDO DO BANCO: 
+    1 - Adicionar campo em BankAccountsView.php
+    2 - Adicionar "cb.nome_da_mae" na query, em BankAccount.php

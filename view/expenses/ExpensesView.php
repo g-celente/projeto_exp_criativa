@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_submit'])) {
     $conta_bancaria_id = (int)$_POST['edit_conta_bancaria'];
     $transacao_valor = (float)str_replace(',', '.', $_POST['edit_valor']);
     $transacao_descricao = $_POST['edit_descricao'];
-    $data = $_POST['data'];
+    $date = $_POST['edit_data'];
 
 
     $result = editExpense($categoria_id, $expense_id, $conta_bancaria_id, $transacao_valor, $transacao_descricao, $date);
@@ -85,6 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_submit'])) {
         document.getElementById('edit_valor').value = entry.transacao_valor;
         document.getElementById('edit_categoria_id').value = entry.categoria_id;
         document.getElementById('edit_conta_bancaria').value = entry.conta_bancaria_id;
+        document.getElementById('edit_data').value = entry.transacao_data;
     }
 </script>
 
@@ -136,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_submit'])) {
                 echo "<td class='value-negative'>R$ " . (!empty($entry['transacao_valor']) ? number_format($entry['transacao_valor'], 2, ',', '.') : '-') . "</td>";
                 echo "<td>" . (!empty($entry['categoria_descricao']) ? htmlspecialchars($entry['categoria_descricao']) : '-') . "</td>";
                 echo "<td>" . (!empty($entry['conta_bancaria_nome']) ? htmlspecialchars($entry['conta_bancaria_nome']) : '-') . "</td>";
-                echo "<td>" . (!empty($entry['data']) ? date('d/m/Y', strtotime($entry['data'])) : date('d/m/Y')) . "</td>";
+                echo "<td>" . (!empty($entry['transacao_data']) ? date('d/m/Y', strtotime($entry['transacao_data'])) : date('d/m/Y')) . "</td>";
                 echo "<td class='actions'>
                         <div class='btn-group'>
                             <button class='btn btn-icon btn-primary' data-bs-toggle='modal' data-bs-target='#editarModal' onClick='handleOpenEditModal(" . json_encode($entry) . ")'>
@@ -243,7 +244,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_submit'])) {
                         </div>
                         <div class="mb-3">
                             <label for="data" class="form-label mb-1">Data:</label>
-                            <input type="date" class="form-control" id="data" name="data" required>
+                            <input type="date" class="form-control" id="edit_data" name="edit_data" required>
                         </div>
                         <div class="mb-3">
                             <label for="edit_categoria_id" class="form-label mb-1">Categoria:</label>

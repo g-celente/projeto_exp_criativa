@@ -24,6 +24,7 @@ function getExpensesList(){
                 t.transacao_valor,
                 t.transacao_descricao,
                 t.categoria_id,
+                t.transacao_data,
                 t.conta_bancaria_id,
                 ca.categoria_descricao,
                 c.nome AS conta_bancaria_nome
@@ -65,6 +66,7 @@ function editExpenseById($categoria_id, $transacao_id, $conta_bancaria_id, $tran
     $conta_bancaria_id = pg_escape_string($conn, $conta_bancaria_id);
     $transacao_valor = pg_escape_string($conn, $transacao_valor);
     $transacao_descricao = pg_escape_string($conn, $transacao_descricao);
+    $date = pg_escape_string($conn , $date);
     $usuario_id = $_SESSION['id'];
     $transacao_tipo_id = 1; // 1 para entrada, 2 para saída
 
@@ -73,7 +75,7 @@ function editExpenseById($categoria_id, $transacao_id, $conta_bancaria_id, $tran
                     categoria_id = '$categoria_id',
                     conta_bancaria_id = '$conta_bancaria_id',
                     transacao_valor = '$transacao_valor',
-                    transacao_descricao = '$transacao_descricao'
+                    transacao_descricao = '$transacao_descricao',
                     transacao_data = '$date'
                 WHERE 
                     transacao_id = '$transacao_id';
