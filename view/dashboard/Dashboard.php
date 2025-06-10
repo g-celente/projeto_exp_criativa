@@ -29,7 +29,6 @@ $categoriesList = listCategories();
     <?php include("../../assets/templates/sideBar/BaseSideBar.php"); ?>
     
     <div class="container">
-        <?php include("../../assets/templates/navBar/navBar.php"); ?>
         <div class="main-content">
             <!-- <header>
                 <h1 style="font-family: 'Inter', sans-serif; font-weight:bold;">Relatórios Financeiros</h1>

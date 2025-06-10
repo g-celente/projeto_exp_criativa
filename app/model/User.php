@@ -131,3 +131,55 @@ function deleteUser($userId){
 
     return $result ? true : "Erro ao deletar conta do usuário";
 }
+
+function getAllTransactionByUser(){
+    $conn = create_connection();
+    $usuario_id = $_SESSION['id'];
+
+    $query = "SELECT 
+                t.transacao_id,
+                t.transacao_valor,
+                t.transacao_descricao,
+                t.categoria_id,
+                t.conta_bancaria_id,
+                t.transacao_tipo_id,
+                t.transacao_data,
+                ca.categoria_descricao,
+                c.nome AS conta_bancaria_nome
+            FROM transacoes t
+            INNER JOIN conta_bancaria c ON t.conta_bancaria_id = c.id
+            INNER JOIN categorias ca ON t.categoria_id = ca.categoria_id
+            WHERE t.usuario_id = $usuario_id";
+            
+    $result = pg_query($conn, $query);
+
+
+    return $result ? pg_fetch_all($result) : false;
+}
+
+function getUserById() {
+    $conn = create_connection();
+
+    $id = $_SESSION['id'];
+
+    $id = pg_escape_string($conn, $id);
+
+    $query = "
+        SELECT 
+            users.*, 
+            cb.nome,
+            cb.conta,
+            cb.agencia
+        FROM users
+        LEFT JOIN conta_bancaria AS cb ON users.id = cb.usuario_id
+        WHERE users.id = $id
+    ";
+
+    $result = pg_query($conn, $query);
+
+    if (!$result) {
+        return "Erro ao buscar o usuário.";
+    }
+
+    return pg_fetch_assoc($result);
+}

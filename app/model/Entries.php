@@ -39,6 +39,31 @@ function getEntriesList(){
     return $result ? pg_fetch_all($result) : false;
 }
 
+function getEntriesListByAccount($contaId){
+    $conn = create_connection();
+    $usuario_id = $_SESSION['id'];
+    $contaId = pg_escape_string($conn, $contaId);
+
+    $query = "SELECT 
+                t.transacao_id,
+                t.transacao_valor,
+                t.transacao_descricao,
+                t.categoria_id,
+                t.conta_bancaria_id,
+                t.transacao_tipo_id,
+                ca.categoria_descricao,
+                c.nome AS conta_bancaria_nome
+            FROM transacoes t
+            INNER JOIN conta_bancaria c ON t.conta_bancaria_id = c.id
+            INNER JOIN categorias ca ON t.categoria_id = ca.categoria_id
+            WHERE t.usuario_id = '$usuario_id' AND t.transacao_tipo_id = 1 AND t.conta_bancaria_id = $contaId";
+            
+    $result = pg_query($conn, $query);
+
+
+    return $result ? pg_fetch_all($result) : false;
+}
+
 function newEntry($categoria_id,$conta_bancaria_id, $transacao_valor, $transacao_descricao){
     $conn = create_connection();
 

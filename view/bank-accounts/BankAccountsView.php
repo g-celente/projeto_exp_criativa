@@ -10,8 +10,8 @@ $userId = $_SESSION['id'];
 $hasAccount = getUserBankAccounts($userId);
 $reminders = getRemindersByUserPago();
 
-$transactions = getTransactionsList();
-$entries = getEntriesList();
+$transactions = getTransactionsListByAccount($hasAccount[0]['id']);
+$entries = getEntriesListByAccount($hasAccount[0]['id']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 
@@ -28,6 +28,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
         echo "<script>alert('Erro ao criar entrada.');</script>";
     }
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit-submit'])) {
+
+    $conta_bancaria = $_POST['name'];
+    $agencia = (int)$_POST['agencia'];
+    $conta = (int)$_POST['conta'];
+
+    $result = createBankAccount($conta_bancaria, $agencia, $conta);
+
+    if ($result) {
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit;
+    } else {
+        echo "<script>alert('Erro ao criar entrada.');</script>";
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -93,7 +110,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                 </div>
             </div>
         <?php else: ?>
-            <h1>Minha Conta</h1>
+            <div class="account-header">
+                <h1 class="section-title">Minha Conta</h1>
+                <div class="account-actions">
+                    <button class="btn edit-btn" onclick="openEditModal()">Editar</button>
+                    <a href="../../app/helpers/DeleteBankAccount.php?id=<?= $hasAccount[0]['id'] ?>" onclick="return confirm('Tem certeza que deseja deletar esta conta?')" class="btn delete-btn">Deletar Conta</a>
+                </div>
+            </div>
 
             <div class="grid-two-column">
                 <!-- Card da Conta Bancária -->
@@ -105,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                                 <?php echo htmlspecialchars($hasAccount[0]["nome"]); ?>
                             </span>
                         </div>
-                        <div class="card-balance">Saldo: R$ <?= number_format(getTotalBalanceService(), 2, ',', '.') ?></div>
+                        <div class="card-balance">Saldo: R$ <?= number_format(getTotalBalanceServiceByAccount($hasAccount[0]['id']), 2, ',', '.') ?></div>
                         <div class="card-number">•••• •••• •••• 1234</div>
                         <div class="card-footer">
                             <span>Atualizado</span>
@@ -118,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                             <span class="card-type">Entradas</span>
                             <span class="card-logo"><?php echo htmlspecialchars($hasAccount[0]["nome"]); ?></span>
                         </div>
-                        <div class="card-balance">R$ <?= number_format(getTotalRevenueService(), 2, ',', '.') ?></div>
+                        <div class="card-balance">R$ <?= number_format(getTotalRevenueServiceByAccount($hasAccount[0]['id']), 2, ',', '.') ?></div>
                         <div class="card-number">•••• •••• •••• 4562</div>
                         <div class="card-footer">
                             <span>08/25</span>
@@ -132,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                             <span class="card-type">Saídas</span>
                             <span class="card-logo"><?php echo htmlspecialchars($hasAccount[0]["nome"]); ?></span>
                         </div>
-                        <div class="card-balance">R$ <?= number_format(getTotalExpensesService(), 2, ',', '.') ?></div>
+                        <div class="card-balance">R$ <?= number_format(getTotalExpensesServiceByAccount($hasAccount[0]['id']), 2, ',', '.') ?></div>
                         <div class="card-number">•••• •••• •••• 4562</div>
                         <div class="card-footer">
                             <span>05/26</span>
@@ -263,6 +286,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                     </div>
                 <?php endif; ?>
             </div>
+
+            <!-- Modal de Editar !-->
+
+            <div class="modal fade" id="editarModal" tabindex="-1" role="dialog" aria-labelledby="editarModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editarModalLabel">Editar Conta</h5>
+                            <button type="button" class="close" onclick="closeEditModal()" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form method="post">
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="Nome" class="form-label mb-1">Nome:</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="Agencia" class="form-label mb-1">Agência:</label>
+                                    <input type="number" class="form-control" id="agencia" name="agencia" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="Conta" class="form-label mb-1">Conta:</label>
+                                    <input type="number" class="form-control" id="conta" name="conta" required>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" onclick="closeEditModal()">Cancelar</button>
+                                <button type="submit" name="edit-submit" class="btn btn-primary">Adicionar</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
         <?php endif; ?>
     </div>
 
@@ -292,6 +354,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 
         function closeModal() {
             document.getElementById('adicionarModal').classList.remove('show');
+        }
+
+        function openEditModal() {
+            document.getElementById('editarModal').classList.add('show');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editarModal').classList.remove('show')
         }
     </script>
 </body>
@@ -672,6 +742,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 
     .transaction-card .status i {
         margin-right: 6px;
+    }
+
+    .account-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .section-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .account-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .edit-btn {
+        background-color: darkorange;
+    }
+
+    .edit-btn:hover {
+        background-color: #e67e00;
+        color: white;
+    }
+
+    .delete-btn {
+        background-color: red;
+    }
+
+    .delete-btn:hover {
+        background-color: darkred;
+        color: white;
     }
 </style>
 

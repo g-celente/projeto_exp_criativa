@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <label class="label-input" for="cpf">
                         <i class="far fa-id-card icon-modify"></i>
-                        <input type="text" name="cpf" id="cpf" placeholder="CPF" required>
+                        <input type="text" name="cpf" id="cpf" placeholder="CPF/CNPJ" required>
                     </label>
 
                     <label class="label-input" for="password">

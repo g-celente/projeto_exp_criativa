@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . '/../../vendor/autoload.php';
 include("../model/User.php");
+include("../../protected.php");
 
 function GerarExtrato() {
     $transacoes = getAllTransactionByUser();
@@ -16,7 +17,7 @@ function GerarExtrato() {
 
         $pdf->Ln(2);
         $pdf->SetFont('Arial', '', 10);
-        $usuario = getUserById($_SESSION['id']);
+        $usuario = getUserById();
         $pdf->Cell(100, 6, utf8_decode("Nome: {$usuario['name']}"), 0);
         $pdf->Cell(90, 6, utf8_decode("Data de emissão: ") . date('d/m/Y'), 0, 1, 'R');
         $pdf->Cell(100, 6, utf8_decode("Agência: {$usuario['agencia']}"), 0);
