@@ -136,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_submit'])) {
                 echo "<td class='value-negative'>R$ " . (!empty($entry['transacao_valor']) ? number_format($entry['transacao_valor'], 2, ',', '.') : '-') . "</td>";
                 echo "<td>" . (!empty($entry['categoria_descricao']) ? htmlspecialchars($entry['categoria_descricao']) : '-') . "</td>";
                 echo "<td>" . (!empty($entry['conta_bancaria_nome']) ? htmlspecialchars($entry['conta_bancaria_nome']) : '-') . "</td>";
-                echo "<td>" . (!empty($entry['data']) ? date('d/m/Y', strtotime($entry['data'])) : date('d/m/Y')) . "</td>";
+                echo "<td>" . (!empty($entry['transacao_data']) ? date('d/m/Y', strtotime($entry['transacao_data'])) : date('d/m/Y')) . "</td>";
                 echo "<td class='actions'>
                         <div class='btn-group'>
                             <button class='btn btn-icon btn-primary' data-bs-toggle='modal' data-bs-target='#editarModal' onClick='handleOpenEditModal(" . json_encode($entry) . ")'>

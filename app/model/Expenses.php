@@ -23,6 +23,7 @@ function getExpensesList(){
                 t.transacao_id,
                 t.transacao_valor,
                 t.transacao_descricao,
+                t.transacao_data,
                 t.categoria_id,
                 t.conta_bancaria_id,
                 ca.categoria_descricao,
